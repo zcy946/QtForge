@@ -1,0 +1,5 @@
+# 第三方库搜索路径
+if(NOT MY_CUSTOM_INSTALL_ROOT_Qt5)
+    set(MY_CUSTOM_INSTALL_ROOT_Qt5 "E:/Software/Qt/5.15.2/msvc2019_64")
+endif()
+list(APPEND CMAKE_PREFIX_PATH ${MY_CUSTOM_INSTALL_ROOT_Qt5})

@@ -1,0 +1,82 @@
+# 本地配置文件，用于差异化配置，例如`MY_CUSTOM_INSTALL_ROOT`
+include(local_config.cmake OPTIONAL)
+
+cmake_minimum_required(VERSION 3.16)
+project(CMake_Qt_Project_Example VERSION 0.0.1 LANGUAGES C CXX)
+
+set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+
+# ================================================================================
+# 查找 & 链接库
+# ================================================================================
+
+# ==================== 找包 ====================
+find_package(spdlog CONFIG REQUIRED)
+find_package(Qt5 COMPONENTS Core Widgets Gui REQUIRED)
+
+# ==================== 整合资源 ====================
+file(GLOB_RECURSE HEADERS
+    "${CMAKE_CURRENT_SOURCE_DIR}/include/*.h"
+    "${CMAKE_CURRENT_SOURCE_DIR}/include/*.hpp"
+)
+aux_source_directory("${CMAKE_CURRENT_SOURCE_DIR}/src" SOURCES)
+set(RESOURCES
+)
+
+# ==================== 配置可执行文件 ====================
+add_executable(${PROJECT_NAME}
+    $<$<CONFIG:Release>:WIN32> 
+    ${SOURCES}
+    ${HEADERS}
+    ${RESOURCES}
+)
+
+# Qt 自动代码生成
+set_target_properties(${PROJECT_NAME} PROPERTIES
+    AUTOMOC ON
+    AUTOUIC ON
+    AUTORCC ON
+)
+
+# ==================== 链接库 ====================
+target_link_libraries(${PROJECT_NAME} PRIVATE
+    Qt5::Core
+    Qt5::Widgets
+    Qt5::Gui
+    spdlog::spdlog
+)
+
+# ==================== 指定头文件路径 ====================
+target_include_directories(${PROJECT_NAME} PRIVATE
+    "${CMAKE_CURRENT_SOURCE_DIR}/include"
+)
+
+# ================================================================================
+# 配置区
+# ================================================================================
+# ==================== 通用配置 ====================
+set(CMAKE_WARN_UNUSED_CLI YES)
+set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
+
+if(NOT XCODE AND NOT MSVC AND NOT CMAKE_BUILD_TYPE)
+    set(CMAKE_BUILD_TYPE Release CACHE STRING "Build type" FORCE)
+    set_property(CACHE CMAKE_BUILD_TYPE PROPERTY STRINGS "Debug" "Release" "MinSizeRel" "RelWithDebInfo")
+endif()
+
+if(WIN32)
+    add_compile_definitions(_CRT_SECURE_NO_WARNINGS)
+endif()
+
+if(MSVC)
+    add_compile_options("$<$<COMPILE_LANGUAGE:C>:/utf-8>")
+    add_compile_options("$<$<COMPILE_LANGUAGE:CXX>:/utf-8>")
+    add_compile_options("$<$<COMPILE_LANGUAGE:C>:/bigobj>")
+    add_compile_options("$<$<COMPILE_LANGUAGE:CXX>:/bigobj>")
+endif()
+
+# ==================== 自定义配置 ====================
+
+# ================================================================================
+# 自定义功能开关区域
+# ================================================================================
