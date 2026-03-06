@@ -1,15 +1,17 @@
 #include "MainWindow.h"
 #include <QVBoxLayout>
+#include "EyLogger.hpp"
 
 MainWindow::MainWindow(EyAbstractWidget *parent)
     : EyAbstractWidget(parent)
 {
+    // 初始化UI
     setupUi();
+
+    LOG_DEBUG("Successfully init");
 }
 
-MainWindow::~MainWindow()
-{
-}
+MainWindow::~MainWindow() = default;
 
 void MainWindow::initItems()
 {
