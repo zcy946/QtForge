@@ -13,7 +13,7 @@
 #define MAINWINDOW_H
 
 #include "EyAbstractWidget.h"
-#include <QLabel>
+#include <QPaintEvent>
 
 class MainWindow : public EyAbstractWidget
 {
@@ -27,8 +27,8 @@ protected:
     void initConnections() override;
     void initWidget() override;
 
-private:
-    QLabel *m_labelMessage;
+protected:
+    void paintEvent(QPaintEvent *event) override;
 };
 
 #endif // MAINWINDOW_H
