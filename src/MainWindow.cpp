@@ -21,7 +21,7 @@ void MainWindow::initItems()
 void MainWindow::initLayout()
 {
     QVBoxLayout *vLayout = new QVBoxLayout(this);
-    vLayout->addWidget(m_labelMessage);
+    vLayout->addWidget(m_labelMessage, 0, Qt::AlignCenter);
 }
 
 void MainWindow::initConnections()
