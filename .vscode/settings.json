@@ -1,0 +1,5 @@
+{
+    "cmake.configureEnvironment": {
+        "PATH": "E:/Software/Qt/5.15.2/msvc2019_64/bin;${env:PATH}"
+    },
+}
