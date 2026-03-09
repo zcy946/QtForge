@@ -1,6 +1,8 @@
 #include "MainWindow.h"
 #include <QVBoxLayout>
 #include "EyLogger.hpp"
+#include <QPainter>
+#include <QFontMetrics>
 
 MainWindow::MainWindow(EyAbstractWidget *parent)
     : EyAbstractWidget(parent)
@@ -15,13 +17,10 @@ MainWindow::~MainWindow() = default;
 
 void MainWindow::initItems()
 {
-    m_labelMessage = new QLabel("以CMake构建的Qt项目示例模板", this);
 }
 
 void MainWindow::initLayout()
 {
-    QVBoxLayout *vLayout = new QVBoxLayout(this);
-    vLayout->addWidget(m_labelMessage, 0, Qt::AlignCenter);
 }
 
 void MainWindow::initConnections()
@@ -30,4 +29,15 @@ void MainWindow::initConnections()
 
 void MainWindow::initWidget()
 {
+}
+
+void MainWindow::paintEvent(QPaintEvent *event)
+{
+    const QString text("以CMake构建的Qt项目示例模板");
+
+    QPainter painter(this);
+    const QFontMetrics fm(painter.font());
+    const qreal x = (width() - fm.horizontalAdvance(text)) / 2;
+    const qreal y = (height() - fm.height()) / 2;
+    painter.drawText(QPointF(x, y), text);
 }
