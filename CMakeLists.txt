@@ -26,7 +26,6 @@ set(RESOURCES
 
 # ==================== 配置可执行文件 ====================
 add_executable(${PROJECT_NAME}
-    $<$<CONFIG:Release>:WIN32> 
     ${SOURCES}
     ${HEADERS}
     ${RESOURCES}
@@ -74,6 +73,11 @@ if(MSVC)
     add_compile_options("$<$<COMPILE_LANGUAGE:C>:/bigobj>")
     add_compile_options("$<$<COMPILE_LANGUAGE:CXX>:/bigobj>")
 endif()
+
+# release版本自动隐藏控制台
+set_target_properties(${PROJECT_NAME} PROPERTIES
+    WIN32_EXECUTABLE $<$<CONFIG:Release>:TRUE>
+)
 
 # ==================== 自定义配置 ====================
 
