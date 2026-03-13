@@ -1,0 +1,13 @@
+# 表示这是项目根目录，停止向上查找
+root = true
+
+# 对所有文件生效
+[*]
+# 强制使用 UTF-8
+charset = utf-8
+# 强制使用 LF 行尾
+end_of_line = lf
+# 自动删除行尾空格
+trim_trailing_whitespace = true
+# 确保文件以换行符结尾
+insert_final_newline = true
