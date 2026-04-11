@@ -1,10 +1,10 @@
 #include <QApplication>
 #include "MainWindow.h"
-#include "EyLogger.hpp"
+#include "XlcLogger.hpp"
 
 int logger = []() -> int
 {
-    EyLogger::init();
+    XlcLogger::init();
     return 0;
 }();
 

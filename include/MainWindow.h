@@ -23,9 +23,6 @@ public:
 
 protected:
     void initItems() override;
-    void initLayout() override;
-    void initConnections() override;
-    void initWidget() override;
 
 protected:
     void paintEvent(QPaintEvent *event) override;

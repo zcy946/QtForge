@@ -1,6 +1,6 @@
 #include "MainWindow.h"
 #include <QVBoxLayout>
-#include "EyLogger.hpp"
+#include "XlcLogger.hpp"
 #include <QPainter>
 #include <QFontMetrics>
 
@@ -16,18 +16,6 @@ MainWindow::MainWindow(XlcAbstractWidget *parent)
 MainWindow::~MainWindow() = default;
 
 void MainWindow::initItems()
-{
-}
-
-void MainWindow::initLayout()
-{
-}
-
-void MainWindow::initConnections()
-{
-}
-
-void MainWindow::initWidget()
 {
 }
 

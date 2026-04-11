@@ -1,5 +1,16 @@
-#ifndef EYLOGGER_H
-#define EYLOGGER_H
+/**
+ * @file XlcLogger.hpp
+ * @author xialichen (xlc946@qq.com)
+ * @brief 日志模块
+ * @version 0.1
+ * @date 2026-04-11
+ * 
+ * @copyright Copyright (c) 2026  夏黎辰
+ * 
+ */
+
+#ifndef XLCLOGGER_H
+#define XLCLOGGER_H
 
 #include <spdlog/spdlog.h>
 #include <spdlog/sinks/stdout_color_sinks.h>
@@ -17,14 +28,14 @@
 // -----------------------------------------------------------------------------
 // 如果定义了 QT_CORE_LIB (通常由 CMake/qmake 定义) 或者检测到 QString 头文件
 #if defined(QT_CORE_LIB)
-#define EY_HAS_QT
+#define XLC_HAS_QT
 #elif defined(__has_include)
 #if __has_include(<QString>)
-#define EY_HAS_QT
+#define XLC_HAS_QT
 #endif
 #endif
 
-#ifdef EY_HAS_QT
+#ifdef XLC_HAS_QT
 #include <QString>
 #endif
 // -----------------------------------------------------------------------------
@@ -32,17 +43,17 @@
 // 存放日志路径&名称
 constexpr const char *LOG_FILE_NAME = "logs/log.log";
 
-#define LOG_TRACE(...) EyLogger::trace({__FILE__, __LINE__, SPDLOG_FUNCTION}, __VA_ARGS__)
-#define LOG_DEBUG(...) EyLogger::debug({__FILE__, __LINE__, SPDLOG_FUNCTION}, __VA_ARGS__)
-#define LOG_INFO(...) EyLogger::info({__FILE__, __LINE__, SPDLOG_FUNCTION}, __VA_ARGS__)
-#define LOG_WARN(...) EyLogger::warn({__FILE__, __LINE__, SPDLOG_FUNCTION}, __VA_ARGS__)
-#define LOG_ERROR(...) EyLogger::error({__FILE__, __LINE__, SPDLOG_FUNCTION}, __VA_ARGS__)
-#define LOG_CRITICAL(...) EyLogger::critical({__FILE__, __LINE__, SPDLOG_FUNCTION}, __VA_ARGS__)
+#define LOG_TRACE(...) XlcLogger::trace({__FILE__, __LINE__, SPDLOG_FUNCTION}, __VA_ARGS__)
+#define LOG_DEBUG(...) XlcLogger::debug({__FILE__, __LINE__, SPDLOG_FUNCTION}, __VA_ARGS__)
+#define LOG_INFO(...) XlcLogger::info({__FILE__, __LINE__, SPDLOG_FUNCTION}, __VA_ARGS__)
+#define LOG_WARN(...) XlcLogger::warn({__FILE__, __LINE__, SPDLOG_FUNCTION}, __VA_ARGS__)
+#define LOG_ERROR(...) XlcLogger::error({__FILE__, __LINE__, SPDLOG_FUNCTION}, __VA_ARGS__)
+#define LOG_CRITICAL(...) XlcLogger::critical({__FILE__, __LINE__, SPDLOG_FUNCTION}, __VA_ARGS__)
 
 // -----------------------------------------------------------------------------
 // 仅在有 Qt 环境时启用 QString 的 fmt 特化
 // -----------------------------------------------------------------------------
-#ifdef EY_HAS_QT
+#ifdef XLC_HAS_QT
 template <>
 struct fmt::formatter<QString>
 {
@@ -64,7 +75,7 @@ struct fmt::formatter<QString>
 };
 #endif
 
-class EyLogger
+class XlcLogger
 {
 public:
     static void init()
@@ -149,4 +160,4 @@ public:
     }
 };
 
-#endif // EYLOGGER_H
+#endif // XLCLOGGER_H
