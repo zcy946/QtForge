@@ -4,8 +4,8 @@
 #include <QPainter>
 #include <QFontMetrics>
 
-MainWindow::MainWindow(EyAbstractWidget *parent)
-    : EyAbstractWidget(parent)
+MainWindow::MainWindow(XlcAbstractWidget *parent)
+    : XlcAbstractWidget(parent)
 {
     // 初始化UI
     setupUi();

@@ -12,13 +12,13 @@
 #ifndef MAINWINDOW_H
 #define MAINWINDOW_H
 
-#include "EyAbstractWidget.h"
+#include "XlcAbstractWidget.h"
 #include <QPaintEvent>
 
-class MainWindow : public EyAbstractWidget
+class MainWindow : public XlcAbstractWidget
 {
 public:
-    explicit MainWindow(EyAbstractWidget *parent = nullptr);
+    explicit MainWindow(XlcAbstractWidget *parent = nullptr);
     virtual ~MainWindow();
 
 protected:

@@ -1,9 +1,9 @@
-#include "EyAbstractWidget.h"
+#include "XlcAbstractWidget.h"
 #include <QHBoxLayout>
 #include <QVBoxLayout>
 #include <QFrame>
 
-EyAbstractWidget::EyAbstractWidget(QWidget *parent)
+XlcAbstractWidget::XlcAbstractWidget(QWidget *parent)
     : QWidget(parent)
 {
     // 注意：不要在父类构造函数中调用虚函数 setupUi()，
@@ -11,7 +11,7 @@ EyAbstractWidget::EyAbstractWidget(QWidget *parent)
     // 必须在子类的构造函数中调用 setupUi()。
 }
 
-void EyAbstractWidget::setupUi()
+void XlcAbstractWidget::setupUi()
 {
     initItems();
     initLayout();

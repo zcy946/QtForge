@@ -1,5 +1,5 @@
 /**
- * @file EyAbstractWidget.h
+ * @file XlcAbstractWidget.h
  * @author xialichen (xlc946@qq.com)
  * @brief 所有继承自`QWidget`的类都应该改为继承该类，进行统一初始化
  * @version 0.1
@@ -9,8 +9,8 @@
  *
  */
 
-#ifndef ABSTRACTWIDGET_H
-#define ABSTRACTWIDGET_H
+#ifndef XLCABSTRACTWIDGET_H
+#define XLCABSTRACTWIDGET_H
 
 #include <QWidget>
 class QHBoxLayout;
@@ -23,12 +23,12 @@ class QVBoxLayout;
  * 所有自定义的 Widget 都应继承此类，并必须实现四个标准初始化步骤。
  * 在子类的构造函数中，请务必显式调用 setupUi() 以启动初始化流程。
  */
-class EyAbstractWidget : public QWidget
+class XlcAbstractWidget : public QWidget
 {
     Q_OBJECT
 public:
-    explicit EyAbstractWidget(QWidget *parent = nullptr);
-    virtual ~EyAbstractWidget() = default;
+    explicit XlcAbstractWidget(QWidget *parent = nullptr);
+    virtual ~XlcAbstractWidget() = default;
 
 protected:
     /**
@@ -84,21 +84,21 @@ protected:
     virtual void initWidget() = 0;
 };
 
-#endif // ABSTRACTWIDGET_H
+#endif // XLCABSTRACTWIDGET_H
 
 #if 0
 // 使用实例
-#include "EyAbstractWidget.h"
+#include "XlcAbstractWidget.h"
 #include <QLabel>
 #include <QPushButton>
 #include <QVBoxLayout>
 #include <QMessageBox>
 
-class MyCustomPanel : public EyAbstractWidget
+class MyCustomPanel : public XlcAbstractWidget
 {
     Q_OBJECT
 public:
-    explicit MyCustomPanel(QWidget *parent = nullptr) : EyAbstractWidget(parent)
+    explicit MyCustomPanel(QWidget *parent = nullptr) : XlcAbstractWidget(parent)
     {
         // 核心：在构造函数最后调用标准化流程
         setupUi();
