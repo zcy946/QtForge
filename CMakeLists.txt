@@ -23,6 +23,8 @@ find_package(spdlog CONFIG REQUIRED)
 find_my_qt(5)
 find_package(Qt5 COMPONENTS Core Widgets Gui REQUIRED)
 
+add_subdirectory("${CMAKE_SOURCE_DIR}/lib/XlcLogger")
+
 # ==================== 整合资源 ====================
 file(GLOB_RECURSE HEADERS
     "${CMAKE_CURRENT_SOURCE_DIR}/include/*.h"
@@ -48,16 +50,18 @@ set_target_properties(${PROJECT_NAME} PROPERTIES
 
 # ==================== 链接库 ====================
 target_link_libraries(${PROJECT_NAME} PRIVATE
+    XlcLogger
     Qt5::Core
     Qt5::Widgets
     Qt5::Gui
-    spdlog::spdlog
 )
 
 # ==================== 指定头文件路径 ====================
 target_include_directories(${PROJECT_NAME} PRIVATE
     "${CMAKE_CURRENT_SOURCE_DIR}/include"
 )
+
+# SPDLOG_ACTIVE_LEVEL 由 XlcLogger 以 PUBLIC 方式传递；若需覆盖可在本目标上再写 target_compile_definitions
 
 # ================================================================================
 # 配置区
