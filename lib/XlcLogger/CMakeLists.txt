@@ -16,14 +16,14 @@ add_library(XlcLogger SHARED
 
 target_include_directories(XlcLogger
     PUBLIC
-        $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
-        $<INSTALL_INTERFACE:include>
+    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+    $<INSTALL_INTERFACE:include>
 )
 
 target_link_libraries(XlcLogger
     PUBLIC
-        Qt5::Core
-        spdlog::spdlog
+    Qt5::Core
+    spdlog::spdlog
 )
 
 # MSVC / MinGW：从 DLL 导出符号（实现主要在 .cpp，模板在头文件中内联）

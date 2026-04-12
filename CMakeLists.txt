@@ -24,6 +24,7 @@ find_my_qt(5)
 find_package(Qt5 COMPONENTS Core Widgets Gui REQUIRED)
 
 add_subdirectory("${CMAKE_SOURCE_DIR}/lib/XlcLogger")
+add_subdirectory("${CMAKE_SOURCE_DIR}/lib/XlcLogWidget")
 
 # ==================== 整合资源 ====================
 file(GLOB_RECURSE HEADERS
@@ -51,6 +52,7 @@ set_target_properties(${PROJECT_NAME} PROPERTIES
 # ==================== 链接库 ====================
 target_link_libraries(${PROJECT_NAME} PRIVATE
     XlcLogger
+    XlcLogWidget
     Qt5::Core
     Qt5::Widgets
     Qt5::Gui

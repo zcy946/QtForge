@@ -13,8 +13,10 @@
 #define MAINWINDOW_H
 
 #include "XlcAbstractWidget.h"
-#include <QPaintEvent>
 
+class QPushButton;
+class QPlainTextEdit;
+class XlcLogWidget;
 class MainWindow : public XlcAbstractWidget
 {
 public:
@@ -23,9 +25,18 @@ public:
 
 protected:
     void initItems() override;
+    void initLayout() override;
+    void initConnections() override;
 
-protected:
-    void paintEvent(QPaintEvent *event) override;
+private:
+    QPushButton *m_pushButtonAddTrace;
+    QPushButton *m_pushButtonAddDebug;
+    QPushButton *m_pushButtonAddInfo;
+    QPushButton *m_pushButtonAddWarn;
+    QPushButton *m_pushButtonAddError;
+    QPushButton *m_pushButtonAddCritical;
+    QPlainTextEdit *m_plainTextEdit;
+    XlcLogWidget *m_xlcLogWidget;
 };
 
 #endif // MAINWINDOW_H
