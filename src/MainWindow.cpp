@@ -6,8 +6,8 @@
 #include <QPushButton>
 #include <QPlainTextEdit>
 
-MainWindow::MainWindow(XlcAbstractWidget *parent)
-    : XlcAbstractWidget(parent)
+MainWindow::MainWindow(QWidget *parent)
+    : QWidget(parent)
 {
     // 初始化UI
     setupUi();
@@ -16,6 +16,13 @@ MainWindow::MainWindow(XlcAbstractWidget *parent)
 }
 
 MainWindow::~MainWindow() = default;
+
+void MainWindow::setupUi()
+{
+    initItems();
+    initLayout();
+    initConnections();
+}
 
 void MainWindow::initItems()
 {

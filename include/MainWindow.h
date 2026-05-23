@@ -12,23 +12,23 @@
 #ifndef MAINWINDOW_H
 #define MAINWINDOW_H
 
-#include "XlcAbstractWidget.h"
+#include <QWidget>
 
 class QPushButton;
 class QPlainTextEdit;
 class XlcLogWidget;
-class MainWindow : public XlcAbstractWidget
+class MainWindow : public QWidget
 {
 public:
-    explicit MainWindow(XlcAbstractWidget *parent = nullptr);
+    explicit MainWindow(QWidget *parent = nullptr);
     virtual ~MainWindow();
 
-protected:
-    void initItems() override;
-    void initLayout() override;
-    void initConnections() override;
-
 private:
+    void setupUi();
+    void initItems();
+    void initLayout();
+    void initConnections();
+
     QPushButton *m_pushButtonAddTrace;
     QPushButton *m_pushButtonAddDebug;
     QPushButton *m_pushButtonAddInfo;
