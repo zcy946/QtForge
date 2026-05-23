@@ -58,6 +58,15 @@ target_link_libraries(${PROJECT_NAME} PRIVATE
     Qt5::Gui
 )
 
+if(WIN32)
+    add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
+        COMMAND ${CMAKE_COMMAND} -E copy_if_different
+            $<TARGET_FILE:XlcLogger>
+            $<TARGET_FILE_DIR:${PROJECT_NAME}>
+        COMMENT "Copying XlcLogger runtime library to executable directory"
+    )
+endif()
+
 # ==================== 指定头文件路径 ====================
 target_include_directories(${PROJECT_NAME} PRIVATE
     "${CMAKE_CURRENT_SOURCE_DIR}/include"

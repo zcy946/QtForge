@@ -69,7 +69,7 @@ int main(int argc, char **argv)
     const QLine qtLine(0, 1, 2, 3);
     const QLineF qtLineF(0.5, 1.25, 2.5, 3.75);
     const QMargins qtMargins(1, 2, 3, 4);
-    LOG_INFO("Qt Core text/url/date: QString='{}', QByteArray='{}', QStringList={}, QUrl='{}', QDate={}, QTime={}, QDateTime={}",
+    LOG_TRACE("Qt Core text/url/date: QString='{}', QByteArray='{}', QStringList={}, QUrl='{}', QDate={}, QTime={}, QDateTime={}",
              qtString,
              qtByteArray,
              qtStringList,
@@ -77,7 +77,7 @@ int main(int argc, char **argv)
              qtDate,
              qtTime,
              qtDateTime);
-    LOG_INFO("Qt Core json/variant: QJsonDocument={}, QJsonObject={}, QJsonArray={}, QJsonValue={}, QVariant={}, QVariantList={}, QVariantMap={}",
+    LOG_DEBUG("Qt Core json/variant: QJsonDocument={}, QJsonObject={}, QJsonArray={}, QJsonValue={}, QVariant={}, QVariantList={}, QVariantMap={}",
              qtJsonDocument,
              qtJsonObject,
              qtJsonArray,
@@ -99,6 +99,7 @@ int main(int argc, char **argv)
              qtLineF,
              qtMargins);
     LOG_ERROR("你好{} - {}", "hello", QStringLiteral("你好"));
+    LOG_CRITICAL("你好{} - {}", "hello", QStringLiteral("你好"));
 
     QObject::connect(&app, &QCoreApplication::aboutToQuit,
                      []()
