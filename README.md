@@ -28,6 +28,7 @@ QtForge 是一个基于 **CMake + Qt5 Widgets + C++17** 的桌面应用模板，
 │   ├── XlcLogger/                 # spdlog 封装库，动态库
 │   └── XlcLogWidget/              # Qt 日志查看控件，静态库
 ├── CODING_GUIDELINES.md           # 编码规范
+├── LICENSE                        # MIT 许可证
 └── README.md
 ```
 
@@ -172,3 +173,9 @@ initItems() -> initLayout() -> initConnections() -> initWidget()
 - `XlcLogger` 是动态库，运行时需确保生成的 DLL 能被可执行程序找到。
 - 如果 `find_package(spdlog CONFIG REQUIRED)` 失败，请先检查包管理器安装情况和 `CMAKE_PREFIX_PATH`。
 - 切换配置文件、编译器或 Qt 安装路径后，建议删除 `build` 目录重新配置。
+
+## 许可证
+
+QtForge 采用 MIT 许可证，详见 [LICENSE](LICENSE)。
+
+本项目依赖的 Qt、spdlog 等第三方库遵循各自的许可证。使用或分发基于 QtForge 构建的程序时，请同时遵守这些第三方依赖的许可要求。

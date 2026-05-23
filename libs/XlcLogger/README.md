@@ -142,7 +142,7 @@ void f()
 
 ---
 
-## 示例五：Qt 应用与退出时 flush
+## 示例五（推荐🚩）：Qt 应用与退出时 flush
 
 ```cpp
 #include <QCoreApplication>
@@ -203,4 +203,5 @@ int main(int argc, char *argv[])
 ## 版本与许可
 
 - 库版本见 `libs/XlcLogger/CMakeLists.txt` 中 `project(... VERSION)`。
-- 源码头部版权声明见 `XlcLogger.hpp`。
+- 本库随 QtForge 采用 MIT 许可证，详见仓库根目录 `LICENSE`。
+- 第三方依赖 `spdlog`、`fmt`、Qt 遵循各自的许可证。

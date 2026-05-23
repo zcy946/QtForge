@@ -167,4 +167,5 @@ connect(logWidget, &XlcLogWidget::sig_lineAppended, [](const QString &line, int 
 ## 版本与许可
 
 - 库版本见 `libs/XlcLogWidget/CMakeLists.txt` 中 `project(... VERSION)`。
-- 源码头部版权声明见 `XlcLogWidget.h`。
+- 本库随 QtForge 采用 MIT 许可证，详见仓库根目录 `LICENSE`。
+- 第三方依赖 `spdlog`、`fmt`、Qt 遵循各自的许可证。
