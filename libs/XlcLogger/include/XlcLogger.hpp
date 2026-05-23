@@ -44,11 +44,33 @@
 #endif
 
 #ifdef XLC_HAS_QT
+#include <QByteArray>
+#include <QDate>
 #include <QDateTime>
-#include <QtGlobal>
+#include <QJsonArray>
+#include <QJsonDocument>
+#include <QJsonObject>
+#include <QJsonValue>
+#include <QLine>
+#include <QLineF>
+#include <QMargins>
+#include <QPoint>
+#include <QPointF>
+#include <QRegularExpression>
 #include <QRect>
+#include <QRectF>
+#include <QSize>
+#include <QSizeF>
 #include <QString>
+#include <QStringList>
+#include <QTime>
 #include <QUrl>
+#include <QUuid>
+#include <QVariant>
+#include <QVariantList>
+#include <QVariantMap>
+#include <QVersionNumber>
+#include <QtGlobal>
 #endif
 
 // -----------------------------------------------------------------------------
@@ -379,6 +401,68 @@ void critical(const char *fmt, Args &&...args)
 /** @name Qt 类型的 `fmt::formatter` 特化（需 `XLC_HAS_QT`） */
 /// @{
 #ifdef XLC_HAS_QT
+namespace xlc::logger_detail
+{
+inline std::string toStdString(const QString &value)
+{
+    const QByteArray bytes = value.toUtf8();
+    return std::string(bytes.constData(), static_cast<size_t>(bytes.size()));
+}
+
+inline std::string toStdString(const QByteArray &value)
+{
+    return std::string(value.constData(), static_cast<size_t>(value.size()));
+}
+
+inline std::string toCompactJson(const QJsonDocument &doc)
+{
+    return toStdString(doc.toJson(QJsonDocument::Compact));
+}
+
+inline std::string toCompactJson(const QJsonValue &value)
+{
+    if (value.isUndefined())
+    {
+        return "undefined";
+    }
+
+    if (value.isObject())
+    {
+        return toCompactJson(QJsonDocument(value.toObject()));
+    }
+
+    if (value.isArray())
+    {
+        return toCompactJson(QJsonDocument(value.toArray()));
+    }
+
+    const std::string wrapped = toCompactJson(QJsonDocument(QJsonArray{value}));
+    return wrapped.size() >= 2 ? wrapped.substr(1, wrapped.size() - 2) : wrapped;
+}
+
+inline std::string toCompactJson(const QVariant &value)
+{
+    if (!value.isValid())
+    {
+        return "invalid";
+    }
+
+    const QJsonValue jsonValue = QJsonValue::fromVariant(value);
+    if (!jsonValue.isUndefined())
+    {
+        return toCompactJson(jsonValue);
+    }
+
+    const QString text = value.toString();
+    if (!text.isEmpty())
+    {
+        return toStdString(text);
+    }
+
+    return value.typeName() ? value.typeName() : "unknown";
+}
+} // namespace xlc::logger_detail
+
 /**
  * @brief `QString`：按 UTF-8 输出。
  * @note 极高频路径可在外部先 `toUtf8()` 再传 `string_view`/`std::string`，避免重复分配。
@@ -394,9 +478,45 @@ struct fmt::formatter<QString>
     template <typename FormatContext>
     auto format(const QString &q, FormatContext &ctx) const -> decltype(ctx.out())
     {
-        const QByteArray byteArray = q.toUtf8();
-        std::string_view utf8View(byteArray.constData(), static_cast<size_t>(byteArray.size()));
-        return fmt::format_to(ctx.out(), "{}", utf8View);
+        return fmt::format_to(ctx.out(), "{}", xlc::logger_detail::toStdString(q));
+    }
+};
+
+/** @brief `QByteArray`：按原始字节输出，常用于 UTF-8 文本缓冲。 */
+template <>
+struct fmt::formatter<QByteArray>
+{
+    constexpr auto parse(format_parse_context &ctx) -> decltype(ctx.begin())
+    {
+        return ctx.begin();
+    }
+
+    template <typename FormatContext>
+    auto format(const QByteArray &bytes, FormatContext &ctx) const -> decltype(ctx.out())
+    {
+        return fmt::format_to(ctx.out(), "{}", xlc::logger_detail::toStdString(bytes));
+    }
+};
+
+/** @brief `QStringList`：格式为 `["a", "b"]`。 */
+template <>
+struct fmt::formatter<QStringList>
+{
+    constexpr auto parse(format_parse_context &ctx) -> decltype(ctx.begin())
+    {
+        return ctx.begin();
+    }
+
+    template <typename FormatContext>
+    auto format(const QStringList &list, FormatContext &ctx) const -> decltype(ctx.out())
+    {
+        QStringList quoted;
+        quoted.reserve(list.size());
+        for (const QString &item : list)
+        {
+            quoted.append(QStringLiteral("\"") + item + QStringLiteral("\""));
+        }
+        return fmt::format_to(ctx.out(), "[{}]", xlc::logger_detail::toStdString(quoted.join(QStringLiteral(", "))));
     }
 };
 
@@ -412,9 +532,44 @@ struct fmt::formatter<QUrl>
     template <typename FormatContext>
     auto format(const QUrl &u, FormatContext &ctx) const -> decltype(ctx.out())
     {
-        const QByteArray urlUtf8 = u.toString(QUrl::PrettyDecoded).toUtf8();
-        std::string_view utf8View(urlUtf8.constData(), static_cast<size_t>(urlUtf8.size()));
-        return fmt::format_to(ctx.out(), "{}", utf8View);
+        return fmt::format_to(ctx.out(), "{}", xlc::logger_detail::toStdString(u.toString(QUrl::PrettyDecoded)));
+    }
+};
+
+/** @brief `QDate`：使用 `Qt::ISODate`。 */
+template <>
+struct fmt::formatter<QDate>
+{
+    constexpr auto parse(format_parse_context &ctx) -> decltype(ctx.begin())
+    {
+        return ctx.begin();
+    }
+
+    template <typename FormatContext>
+    auto format(const QDate &date, FormatContext &ctx) const -> decltype(ctx.out())
+    {
+        return fmt::format_to(ctx.out(), "{}", xlc::logger_detail::toStdString(date.toString(Qt::ISODate)));
+    }
+};
+
+/** @brief `QTime`：Qt 5.8+ 使用 `ISODateWithMs`，否则 `ISODate`。 */
+template <>
+struct fmt::formatter<QTime>
+{
+    constexpr auto parse(format_parse_context &ctx) -> decltype(ctx.begin())
+    {
+        return ctx.begin();
+    }
+
+    template <typename FormatContext>
+    auto format(const QTime &time, FormatContext &ctx) const -> decltype(ctx.out())
+    {
+#if QT_VERSION >= QT_VERSION_CHECK(5, 8, 0)
+        const QString isoString = time.toString(Qt::ISODateWithMs);
+#else
+        const QString isoString = time.toString(Qt::ISODate);
+#endif
+        return fmt::format_to(ctx.out(), "{}", xlc::logger_detail::toStdString(isoString));
     }
 };
 
@@ -435,9 +590,231 @@ struct fmt::formatter<QDateTime>
 #else
         const QString isoString = dt.toString(Qt::ISODate);
 #endif
-        const QByteArray utf8Bytes = isoString.toUtf8();
-        std::string_view utf8View(utf8Bytes.constData(), static_cast<size_t>(utf8Bytes.size()));
-        return fmt::format_to(ctx.out(), "{}", utf8View);
+        return fmt::format_to(ctx.out(), "{}", xlc::logger_detail::toStdString(isoString));
+    }
+};
+
+/** @brief `QJsonDocument`：紧凑 JSON。 */
+template <>
+struct fmt::formatter<QJsonDocument>
+{
+    constexpr auto parse(format_parse_context &ctx) -> decltype(ctx.begin())
+    {
+        return ctx.begin();
+    }
+
+    template <typename FormatContext>
+    auto format(const QJsonDocument &doc, FormatContext &ctx) const -> decltype(ctx.out())
+    {
+        return fmt::format_to(ctx.out(), "{}", xlc::logger_detail::toCompactJson(doc));
+    }
+};
+
+/** @brief `QJsonObject`：紧凑 JSON 对象。 */
+template <>
+struct fmt::formatter<QJsonObject>
+{
+    constexpr auto parse(format_parse_context &ctx) -> decltype(ctx.begin())
+    {
+        return ctx.begin();
+    }
+
+    template <typename FormatContext>
+    auto format(const QJsonObject &object, FormatContext &ctx) const -> decltype(ctx.out())
+    {
+        return fmt::format_to(ctx.out(), "{}", xlc::logger_detail::toCompactJson(QJsonDocument(object)));
+    }
+};
+
+/** @brief `QJsonArray`：紧凑 JSON 数组。 */
+template <>
+struct fmt::formatter<QJsonArray>
+{
+    constexpr auto parse(format_parse_context &ctx) -> decltype(ctx.begin())
+    {
+        return ctx.begin();
+    }
+
+    template <typename FormatContext>
+    auto format(const QJsonArray &array, FormatContext &ctx) const -> decltype(ctx.out())
+    {
+        return fmt::format_to(ctx.out(), "{}", xlc::logger_detail::toCompactJson(QJsonDocument(array)));
+    }
+};
+
+/** @brief `QJsonValue`：紧凑 JSON 值。 */
+template <>
+struct fmt::formatter<QJsonValue>
+{
+    constexpr auto parse(format_parse_context &ctx) -> decltype(ctx.begin())
+    {
+        return ctx.begin();
+    }
+
+    template <typename FormatContext>
+    auto format(const QJsonValue &value, FormatContext &ctx) const -> decltype(ctx.out())
+    {
+        return fmt::format_to(ctx.out(), "{}", xlc::logger_detail::toCompactJson(value));
+    }
+};
+
+/** @brief `QVariant`：优先按 JSON 语义输出，无法转换时回退到 `toString()`。 */
+template <>
+struct fmt::formatter<QVariant>
+{
+    constexpr auto parse(format_parse_context &ctx) -> decltype(ctx.begin())
+    {
+        return ctx.begin();
+    }
+
+    template <typename FormatContext>
+    auto format(const QVariant &value, FormatContext &ctx) const -> decltype(ctx.out())
+    {
+        return fmt::format_to(ctx.out(), "{}", xlc::logger_detail::toCompactJson(value));
+    }
+};
+
+/** @brief `QVariantList`：紧凑 JSON 数组。 */
+template <>
+struct fmt::formatter<QVariantList>
+{
+    constexpr auto parse(format_parse_context &ctx) -> decltype(ctx.begin())
+    {
+        return ctx.begin();
+    }
+
+    template <typename FormatContext>
+    auto format(const QVariantList &list, FormatContext &ctx) const -> decltype(ctx.out())
+    {
+        return fmt::format_to(ctx.out(), "{}", xlc::logger_detail::toCompactJson(QJsonDocument::fromVariant(list)));
+    }
+};
+
+/** @brief `QVariantMap`：紧凑 JSON 对象。 */
+template <>
+struct fmt::formatter<QVariantMap>
+{
+    constexpr auto parse(format_parse_context &ctx) -> decltype(ctx.begin())
+    {
+        return ctx.begin();
+    }
+
+    template <typename FormatContext>
+    auto format(const QVariantMap &map, FormatContext &ctx) const -> decltype(ctx.out())
+    {
+        return fmt::format_to(ctx.out(), "{}", xlc::logger_detail::toCompactJson(QJsonDocument::fromVariant(map)));
+    }
+};
+
+/** @brief `QUuid`：无大括号字符串形式。 */
+template <>
+struct fmt::formatter<QUuid>
+{
+    constexpr auto parse(format_parse_context &ctx) -> decltype(ctx.begin())
+    {
+        return ctx.begin();
+    }
+
+    template <typename FormatContext>
+    auto format(const QUuid &uuid, FormatContext &ctx) const -> decltype(ctx.out())
+    {
+        return fmt::format_to(ctx.out(), "{}", xlc::logger_detail::toStdString(uuid.toString(QUuid::WithoutBraces)));
+    }
+};
+
+/** @brief `QVersionNumber`：标准点分版本号。 */
+template <>
+struct fmt::formatter<QVersionNumber>
+{
+    constexpr auto parse(format_parse_context &ctx) -> decltype(ctx.begin())
+    {
+        return ctx.begin();
+    }
+
+    template <typename FormatContext>
+    auto format(const QVersionNumber &version, FormatContext &ctx) const -> decltype(ctx.out())
+    {
+        return fmt::format_to(ctx.out(), "{}", xlc::logger_detail::toStdString(version.toString()));
+    }
+};
+
+/** @brief `QRegularExpression`：输出 pattern。 */
+template <>
+struct fmt::formatter<QRegularExpression>
+{
+    constexpr auto parse(format_parse_context &ctx) -> decltype(ctx.begin())
+    {
+        return ctx.begin();
+    }
+
+    template <typename FormatContext>
+    auto format(const QRegularExpression &re, FormatContext &ctx) const -> decltype(ctx.out())
+    {
+        return fmt::format_to(ctx.out(), "{}", xlc::logger_detail::toStdString(re.pattern()));
+    }
+};
+
+/** @brief `QSize`：格式为 `wxh`。 */
+template <>
+struct fmt::formatter<QSize>
+{
+    constexpr auto parse(format_parse_context &ctx) -> decltype(ctx.begin())
+    {
+        return ctx.begin();
+    }
+
+    template <typename FormatContext>
+    auto format(const QSize &s, FormatContext &ctx) const -> decltype(ctx.out())
+    {
+        return fmt::format_to(ctx.out(), "{}x{}", s.width(), s.height());
+    }
+};
+
+/** @brief `QSizeF`：格式为 `wxh`。 */
+template <>
+struct fmt::formatter<QSizeF>
+{
+    constexpr auto parse(format_parse_context &ctx) -> decltype(ctx.begin())
+    {
+        return ctx.begin();
+    }
+
+    template <typename FormatContext>
+    auto format(const QSizeF &s, FormatContext &ctx) const -> decltype(ctx.out())
+    {
+        return fmt::format_to(ctx.out(), "{}x{}", s.width(), s.height());
+    }
+};
+
+/** @brief `QPoint`：格式为 `x,y`。 */
+template <>
+struct fmt::formatter<QPoint>
+{
+    constexpr auto parse(format_parse_context &ctx) -> decltype(ctx.begin())
+    {
+        return ctx.begin();
+    }
+
+    template <typename FormatContext>
+    auto format(const QPoint &p, FormatContext &ctx) const -> decltype(ctx.out())
+    {
+        return fmt::format_to(ctx.out(), "{},{}", p.x(), p.y());
+    }
+};
+
+/** @brief `QPointF`：格式为 `x,y`。 */
+template <>
+struct fmt::formatter<QPointF>
+{
+    constexpr auto parse(format_parse_context &ctx) -> decltype(ctx.begin())
+    {
+        return ctx.begin();
+    }
+
+    template <typename FormatContext>
+    auto format(const QPointF &p, FormatContext &ctx) const -> decltype(ctx.out())
+    {
+        return fmt::format_to(ctx.out(), "{},{}", p.x(), p.y());
     }
 };
 
@@ -454,6 +831,74 @@ struct fmt::formatter<QRect>
     auto format(const QRect &r, FormatContext &ctx) const -> decltype(ctx.out())
     {
         return fmt::format_to(ctx.out(), "{},{} {}x{}", r.x(), r.y(), r.width(), r.height());
+    }
+};
+
+/** @brief `QRectF`：格式为 `x,y wxh`。 */
+template <>
+struct fmt::formatter<QRectF>
+{
+    constexpr auto parse(format_parse_context &ctx) -> decltype(ctx.begin())
+    {
+        return ctx.begin();
+    }
+
+    template <typename FormatContext>
+    auto format(const QRectF &r, FormatContext &ctx) const -> decltype(ctx.out())
+    {
+        return fmt::format_to(ctx.out(), "{},{} {}x{}", r.x(), r.y(), r.width(), r.height());
+    }
+};
+
+/** @brief `QLine`：格式为 `x1,y1 -> x2,y2`。 */
+template <>
+struct fmt::formatter<QLine>
+{
+    constexpr auto parse(format_parse_context &ctx) -> decltype(ctx.begin())
+    {
+        return ctx.begin();
+    }
+
+    template <typename FormatContext>
+    auto format(const QLine &line, FormatContext &ctx) const -> decltype(ctx.out())
+    {
+        return fmt::format_to(ctx.out(), "{},{} -> {},{}", line.x1(), line.y1(), line.x2(), line.y2());
+    }
+};
+
+/** @brief `QLineF`：格式为 `x1,y1 -> x2,y2`。 */
+template <>
+struct fmt::formatter<QLineF>
+{
+    constexpr auto parse(format_parse_context &ctx) -> decltype(ctx.begin())
+    {
+        return ctx.begin();
+    }
+
+    template <typename FormatContext>
+    auto format(const QLineF &line, FormatContext &ctx) const -> decltype(ctx.out())
+    {
+        return fmt::format_to(ctx.out(), "{},{} -> {},{}", line.x1(), line.y1(), line.x2(), line.y2());
+    }
+};
+
+/** @brief `QMargins`：格式为 `left,top,right,bottom`。 */
+template <>
+struct fmt::formatter<QMargins>
+{
+    constexpr auto parse(format_parse_context &ctx) -> decltype(ctx.begin())
+    {
+        return ctx.begin();
+    }
+
+    template <typename FormatContext>
+    auto format(const QMargins &margins, FormatContext &ctx) const -> decltype(ctx.out())
+    {
+        return fmt::format_to(ctx.out(), "{},{},{},{}",
+                              margins.left(),
+                              margins.top(),
+                              margins.right(),
+                              margins.bottom());
     }
 };
 #endif
