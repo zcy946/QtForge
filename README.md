@@ -1,6 +1,6 @@
-# CMake Qt 项目模板
+# QtForge
 
-这是一个基于 **CMake + Qt5 Widgets + C++17** 的桌面应用模板，适合作为新的 Qt Widget 项目起点。项目内置了一个简单主窗口示例，并集成了基于 `spdlog` 的日志库和日志查看控件。
+QtForge 是一个基于 **CMake + Qt5 Widgets + C++17** 的桌面应用模板，适合作为新的 Qt Widgets 项目起点。它提供了一个可直接运行的主窗口示例，并集成了基于 `spdlog` 的日志库和日志查看控件，方便快速搭建带日志能力的 Qt 桌面程序。
 
 ## 功能概览
 
@@ -82,11 +82,13 @@ build/Release/
 
 ## 示例程序
 
-可执行目标名来自顶层 CMake 项目名：
+示例程序的可执行目标名来自顶层 CMake 项目名：
 
 ```cmake
 project(CMake_Qt_Project_Example VERSION 0.0.1 LANGUAGES C CXX)
 ```
+
+使用 QtForge 创建自己的项目时，建议先将该项目名改为实际应用名称。
 
 程序启动时会：
 
@@ -151,9 +153,9 @@ initItems() -> initLayout() -> initConnections() -> initWidget()
 
 该约定只作为编码规范，不要求继承额外基类。不同窗口可按需继承 `QWidget`、`QMainWindow`、`QDialog` 或其他合适的 Qt 类型。
 
-## 作为新项目模板使用
+## 作为项目模板使用
 
-复制本模板后，通常需要修改：
+复制 QtForge 后，通常需要修改：
 
 - 顶层 `CMakeLists.txt` 中的 `project(...)` 名称和版本。
 - `cmake/FindMyQt.cmake` 中的本机 Qt 安装路径。
