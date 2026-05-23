@@ -7,7 +7,7 @@
 ## 目录结构
 
 ```
-lib/XlcLogWidget/
+libs/XlcLogWidget/
 ├── CMakeLists.txt          # 构建 XlcLogWidget STATIC 库
 ├── README.md               # 本说明
 ├── include/
@@ -34,7 +34,7 @@ lib/XlcLogWidget/
 在已能 `find_package(spdlog)`、`find_package(Qt5 COMPONENTS Core Widgets)` 的根 `CMakeLists.txt` 中：
 
 ```cmake
-add_subdirectory("${CMAKE_SOURCE_DIR}/lib/XlcLogWidget")
+add_subdirectory("${CMAKE_SOURCE_DIR}/libs/XlcLogWidget")
 
 add_executable(my_app
     main.cpp
@@ -166,5 +166,5 @@ connect(logWidget, &XlcLogWidget::sig_lineAppended, [](const QString &line, int 
 
 ## 版本与许可
 
-- 库版本见 `lib/XlcLogWidget/CMakeLists.txt` 中 `project(... VERSION)`。
+- 库版本见 `libs/XlcLogWidget/CMakeLists.txt` 中 `project(... VERSION)`。
 - 源码头部版权声明见 `XlcLogWidget.h`。

@@ -7,7 +7,7 @@
 ## 目录结构
 
 ```
-lib/XlcLogger/
+libs/XlcLogger/
 ├── CMakeLists.txt      # 构建 XlcLogger SHARED 库
 ├── README.md           # 本说明
 ├── include/
@@ -35,7 +35,7 @@ lib/XlcLogger/
 
 ```cmake
 # 建议在 find_package(spdlog) 与 Qt5 之后
-add_subdirectory("${CMAKE_SOURCE_DIR}/lib/XlcLogger")
+add_subdirectory("${CMAKE_SOURCE_DIR}/libs/XlcLogger")
 
 add_executable(my_app main.cpp ...)
 target_link_libraries(my_app PRIVATE
@@ -202,5 +202,5 @@ int main(int argc, char *argv[])
 
 ## 版本与许可
 
-- 库版本见 `lib/XlcLogger/CMakeLists.txt` 中 `project(... VERSION)`。
+- 库版本见 `libs/XlcLogger/CMakeLists.txt` 中 `project(... VERSION)`。
 - 源码头部版权声明见 `XlcLogger.hpp`。

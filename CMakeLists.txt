@@ -23,8 +23,8 @@ find_package(spdlog CONFIG REQUIRED)
 find_my_qt(5)
 find_package(Qt5 COMPONENTS Core Widgets Gui REQUIRED)
 
-add_subdirectory("${CMAKE_SOURCE_DIR}/lib/XlcLogger")
-add_subdirectory("${CMAKE_SOURCE_DIR}/lib/XlcLogWidget")
+add_subdirectory("${CMAKE_SOURCE_DIR}/libs/XlcLogger")
+add_subdirectory("${CMAKE_SOURCE_DIR}/libs/XlcLogWidget")
 
 # ==================== 整合资源 ====================
 file(GLOB_RECURSE HEADERS
