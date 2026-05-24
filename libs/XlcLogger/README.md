@@ -70,6 +70,23 @@ target_link_libraries(my_app PRIVATE
 - 默认日志文件路径：`logs/log.log`（可通过 `XlcLoggerOptions::logFilePath` 修改）。
 - 若设置 `createParentDirs == true`（默认），会尝试创建日志文件所在父目录。
 - **`XlcLogger::init()` / `init(opts)` 的返回值**：`true` 表示**文件 sink 已成功**；`false` 表示仅控制台（路径无效、创建失败等）。控制台 logger 仍会注册，应用可正常打日志。
+- `init()` 与 `init(opts)` 共用一次性初始化逻辑，只有第一次调用会真正创建 sink 和 logger；后续调用返回首次初始化时的文件 sink 状态。
+- `useAsyncFile == true` 且文件 sink 创建成功时，会使用 `spdlog::async_logger`；如果文件 sink 不可用，则退回仅控制台 logger。
+
+---
+
+## API 快览
+
+| API | 说明 |
+|-----|------|
+| `XlcLoggerOptions::defaultForCurrentBuild()` | 根据当前预处理宏填充默认级别：Qt Debug、`_DEBUG` 或未定义 `NDEBUG` 时为 `trace`；否则为 `warn`；`loggerLevel` 保持 `trace` 总闸。 |
+| `XlcLogger::init()` / `init(opts)` | 初始化默认 logger，注册控制台 sink 和可选轮转文件 sink。 |
+| `XlcLogger::shutdown()` | 关闭并刷新 spdlog；正常退出路径中应显式调用一次。 |
+| `XlcLogger::fileSinkEnabled()` | 查询当前文件 sink 是否成功启用，与首次 `init` 返回值一致。 |
+| `XlcLogger::setLevel(level)` | 同时调整默认 logger 和所有 sink 的运行时级别。 |
+| `XlcLogger::setConsoleLevel(level)` | 仅调整控制台 sink 级别。 |
+| `XlcLogger::setFileLevel(level)` | 仅调整文件 sink 级别。 |
+| `XlcLogger::moduleLogger(name, level)` | 按名称获取或创建模块 logger；新建时克隆默认 logger 的 sink 列表。 |
 
 ---
 
@@ -77,7 +94,7 @@ target_link_libraries(my_app PRIVATE
 
 1. 在程序入口**尽早**调用 `XlcLogger::init()` 或 `init(XlcLoggerOptions{...})`（仅第一次有效）。
 2. 在业务代码中使用 `LOG_INFO("value={}", x)` 等宏。
-3. 进程退出前建议调用 `spdlog::shutdown()`（例如在 `QCoreApplication::aboutToQuit`），确保缓冲写入。
+3. 正常退出路径中显式调用一次 `XlcLogger::shutdown()`（例如在 `QCoreApplication::aboutToQuit`），确保缓冲写入；`aboutToQuit` 不是唯一写法，关键是正常退出时有一次明确收尾。
 
 ---
 
@@ -136,6 +153,11 @@ void netModule()
 }
 ```
 
+说明：
+
+- `moduleLogger()` 需要在 `XlcLogger::init()` 之后调用；若默认 logger 尚不存在，会返回 `nullptr`。
+- 如果同名模块 logger 已存在，`moduleLogger(name, level)` 会直接返回已有 logger，**不会**修改它的级别。
+
 ---
 
 ## 示例四：非宏 API（`xlc::log`）
@@ -153,12 +175,13 @@ void f()
 
 ---
 
-## 示例五（推荐🚩）：Qt 应用与退出时 flush
+## 示例五：Qt 应用与退出时 flush
+
+Qt 程序可用 `QCoreApplication::aboutToQuit` 触发退出清理；也可以在 `app.exec()` 返回后、`QApplication` 析构前调用。两种方式都可以，关键是正常退出路径中显式调用一次 `XlcLogger::shutdown()`。
 
 ```cpp
 #include <QCoreApplication>
 #include <QApplication>
-#include <spdlog/spdlog.h>
 #include "XlcLogger.hpp"
 
 int main(int argc, char *argv[])
@@ -167,7 +190,7 @@ int main(int argc, char *argv[])
 
     (void)XlcLogger::init();
     QObject::connect(&app, &QCoreApplication::aboutToQuit, []() {
-        spdlog::shutdown();
+        XlcLogger::shutdown();
     });
 
     // ... UI ...
@@ -180,9 +203,36 @@ int main(int argc, char *argv[])
 ## 日志级别与宏裁剪
 
 - **运行时**：`loggerLevel` 为总闸；`consoleLevel`、`fileLevel` 分别限制控制台与文件。
-- **编译期**：`LOG_TRACE`～`LOG_CRITICAL` 受 **`SPDLOG_ACTIVE_LEVEL`** 约束（由本库 CMake 按配置传入）。低于该级别的宏可展开为 `(void)0`，避免格式参数求值。
+- **默认运行时级别**：`defaultForCurrentBuild()` 在 Qt Debug、`_DEBUG` 或未定义 `NDEBUG` 时让控制台和文件输出 `trace` 及以上；否则输出 `warn` 及以上。
+- **运行时调级**：需要临时放宽或收紧输出时，可用 `setLevel()` 同时调整 logger 和 sink，或用 `setConsoleLevel()` / `setFileLevel()` 分别调整。
+- **编译期**：`LOG_TRACE`～`LOG_CRITICAL` 受 **`SPDLOG_ACTIVE_LEVEL`** 约束（由本库 CMake 按配置传入：Debug / RelWithDebInfo 为 `0`，Release / MinSizeRel 为 `2`）。低于该级别的宏可展开为 `(void)0`，避免格式参数求值。
 
 若需自定义裁剪策略，可在**链接 XlcLogger 的目标**上覆盖 `SPDLOG_ACTIVE_LEVEL`（注意与 spdlog 级别数值一致）。
+
+---
+
+## Qt formatter 支持类型
+
+链接 `XlcLoggerQtFormatter` 后，可直接将常用 Qt Core 类型作为 `fmt` 参数传给 `LOG_*` / `xlc::log::*`：
+
+| 类型 | 输出形式 |
+|------|----------|
+| `QString`、`QByteArray` | UTF-8 文本 |
+| `QStringList` | `["a", "b"]` |
+| `QUrl` | `QUrl::PrettyDecoded` 字符串 |
+| `QDate`、`QTime`、`QDateTime` | ISO 日期 / 时间字符串 |
+| `QJsonDocument`、`QJsonObject`、`QJsonArray`、`QJsonValue` | 紧凑 JSON |
+| `QVariant`、`QVariantList`、`QVariantMap` | 优先按 JSON 语义输出，必要时回退为文本 |
+| `QUuid`、`QVersionNumber`、`QRegularExpression` | UUID、版本号、正则 pattern |
+| `QSize`、`QSizeF` | `widthxheight` |
+| `QPoint`、`QPointF` | `x,y` |
+| `QRect`、`QRectF` | `x,y widthxheight` |
+| `QLine`、`QLineF` | `x1,y1 -> x2,y2` |
+| `QMargins` | `left,top,right,bottom` |
+
+```cpp
+LOG_INFO("text={}, url={}, rect={}", QStringLiteral("你好"), QUrl("https://example.com"), QRect(0, 0, 320, 240));
+```
 
 ---
 

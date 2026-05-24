@@ -98,7 +98,7 @@ project(CMake_Qt_Project_Example VERSION 0.0.1 LANGUAGES C CXX)
 3. 显示一个 800x600 的 Qt Widgets 窗口。
 4. 在窗口中提供 Trace、Debug、Info、Warn、Error、Critical 按钮，可将输入框内容写入不同级别的日志。
 5. 通过 `XlcLogWidget` 在界面内实时展示日志。
-6. 在应用退出前调用 `spdlog::shutdown()`，确保日志缓冲刷新。
+6. 在应用正常退出路径中显式调用一次 `XlcLogger::shutdown()`（例如通过 `QCoreApplication::aboutToQuit`），确保日志缓冲刷新。
 
 默认日志文件由 `XlcLogger` 管理，通常写入：
 

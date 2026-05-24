@@ -59,7 +59,7 @@ target_link_libraries(my_app PRIVATE
 
 1. 应用入口调用 **`XlcLogger::init()`**（或带选项的 `init(opts)`），确保存在 **`spdlog::default_logger`**。
 2. 创建 **`XlcLogWidget`** 实例并 **`attachToDefaultLogger()`**；可按需传入 spdlog **pattern** 字符串（与 `sink::set_pattern` 一致）。
-3. 退出前建议 **`spdlog::shutdown()`**（例如在 `QCoreApplication::aboutToQuit`），与 XlcLogger 文档一致。
+3. 正常退出路径中显式调用一次 **`XlcLogger::shutdown()`**（例如在 `QCoreApplication::aboutToQuit`），确保日志缓冲写入；这与 XlcLogger 文档一致。
 
 ---
 

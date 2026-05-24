@@ -69,21 +69,21 @@ int main(int argc, char **argv)
     const QLineF qtLineF(0.5, 1.25, 2.5, 3.75);
     const QMargins qtMargins(1, 2, 3, 4);
     LOG_TRACE("Qt Core text/url/date: QString='{}', QByteArray='{}', QStringList={}, QUrl='{}', QDate={}, QTime={}, QDateTime={}",
-             qtString,
-             qtByteArray,
-             qtStringList,
-             qtUrl,
-             qtDate,
-             qtTime,
-             qtDateTime);
+              qtString,
+              qtByteArray,
+              qtStringList,
+              qtUrl,
+              qtDate,
+              qtTime,
+              qtDateTime);
     LOG_DEBUG("Qt Core json/variant: QJsonDocument={}, QJsonObject={}, QJsonArray={}, QJsonValue={}, QVariant={}, QVariantList={}, QVariantMap={}",
-             qtJsonDocument,
-             qtJsonObject,
-             qtJsonArray,
-             qtJsonValue,
-             qtVariant,
-             qtVariantList,
-             qtVariantMap);
+              qtJsonDocument,
+              qtJsonObject,
+              qtJsonArray,
+              qtJsonValue,
+              qtVariant,
+              qtVariantList,
+              qtVariantMap);
     LOG_INFO("Qt Core misc/geometry: QUuid={}, QVersionNumber={}, QRegularExpression='{}', QSize={}, QSizeF={}, QPoint={}, QPointF={}, QRect={}, QRectF={}, QLine={}, QLineF={}, QMargins={}",
              qtUuid,
              qtVersion,
@@ -100,16 +100,15 @@ int main(int argc, char **argv)
     LOG_ERROR("你好{} - {}", "hello", QStringLiteral("你好"));
     LOG_CRITICAL("你好{} - {}", "hello", QStringLiteral("你好"));
 
-    QObject::connect(&app, &QCoreApplication::aboutToQuit,
-                     []()
-                     {
-                         XlcLogger::shutdown();
-                     });
+    int ret = 0;
+    {
+        MainWindow w;
+        w.resize(800, 600);
+        w.show();
 
-    MainWindow w;
-    w.resize(800, 600);
-    w.show();
-    
-    app.exec();
-    return 0;
+        ret = app.exec();
+    }
+
+    XlcLogger::shutdown();
+    return ret;
 }
