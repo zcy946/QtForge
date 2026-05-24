@@ -50,7 +50,7 @@ target_link_libraries(my_app PRIVATE
 链接 `XlcLogWidget` 后：
 
 - 自动获得 **`#include "XlcLogWidget.h"`** 所需头文件搜索路径。
-- 自动继承 **PUBLIC** 依赖：`Qt5::Core`、`Qt5::Widgets`、`spdlog::spdlog`。
+- 自动继承 **PUBLIC** 依赖：`Qt5::Core`、`Qt5::Widgets`、`spdlog::spdlog_header_only`。
 - 目标需启用 **AUTOMOC**（主工程示例中通常已对可执行文件开启），以便 `Q_OBJECT` 生成 moc。
 
 ---

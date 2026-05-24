@@ -165,6 +165,22 @@ bool XlcLogger::init(const XlcLoggerOptions &opts)
 }
 
 /**
+ * @copydoc XlcLogger::shutdown
+ */
+void XlcLogger::shutdown()
+{
+    spdlog::shutdown();
+}
+
+/**
+ * @copydoc XlcLogger::logText
+ */
+void XlcLogger::logText(spdlog::level::level_enum lvl, spdlog::source_loc loc, std::string_view message)
+{
+    spdlog::log(loc, lvl, "{}", message);
+}
+
+/**
  * @copydoc XlcLogger::fileSinkEnabled
  */
 bool XlcLogger::fileSinkEnabled()

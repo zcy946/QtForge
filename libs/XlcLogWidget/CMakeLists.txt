@@ -28,7 +28,7 @@ target_link_libraries(XlcLogWidget
     PUBLIC
         Qt5::Core
         Qt5::Widgets
-        spdlog::spdlog
+        spdlog::spdlog_header_only
 )
 
 set_target_properties(XlcLogWidget PROPERTIES

@@ -26,7 +26,6 @@
 #include <QVariantList>
 #include <QVariantMap>
 #include <QVersionNumber>
-#include <spdlog/spdlog.h>
 
 #include "MainWindow.h"
 #include "XlcLogger.hpp"
@@ -104,7 +103,7 @@ int main(int argc, char **argv)
     QObject::connect(&app, &QCoreApplication::aboutToQuit,
                      []()
                      {
-                         spdlog::shutdown();
+                         XlcLogger::shutdown();
                      });
 
     MainWindow w;

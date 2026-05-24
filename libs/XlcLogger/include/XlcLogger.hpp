@@ -22,13 +22,13 @@
 #include <string>
 #include <string_view>
 
-#include <fmt/format.h>
-#include <spdlog/common.h>
-#include <spdlog/spdlog.h>
-
 #ifndef SPDLOG_ACTIVE_LEVEL
 #define SPDLOG_ACTIVE_LEVEL SPDLOG_LEVEL_TRACE
 #endif
+
+#include <fmt/format.h>
+#include <spdlog/common.h>
+#include <spdlog/spdlog.h>
 
 /* NOTE vcpkg 安装的 spdlog 用上面 fmt；自行 clone 的 spdlog 可改用 spdlog/fmt/bundled/format.h */
 
@@ -138,6 +138,11 @@ public:
     static bool init(const XlcLoggerOptions &opts);
 
     /**
+     * @brief 关闭并刷新 spdlog，确保操作发生在 XlcLogger DLL 内部。
+     */
+    static void shutdown();
+
+    /**
      * @brief 当前是否已成功注册文件 sink（与 `init` 返回值一致）。
      * @return `true` 文件可用；`false` 仅控制台。
      */
@@ -193,8 +198,13 @@ public:
     template <typename... Args>
     static void log(spdlog::level::level_enum lvl, spdlog::source_loc loc, const char *fmt, Args &&...args)
     {
-        spdlog::log(loc, lvl, fmt, convert(std::forward<Args>(args))...);
+        logText(lvl, loc, fmt::vformat(fmt, fmt::make_format_args(convert(std::forward<Args>(args))...)));
     }
+
+    /**
+     * @brief 输出已格式化好的日志文本；实现在 DLL 内，避免 header-only spdlog 在调用方生成独立 registry。
+     */
+    static void logText(spdlog::level::level_enum lvl, spdlog::source_loc loc, std::string_view message);
 
     /**
      * @brief Trace 级别，带源位置。

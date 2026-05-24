@@ -47,7 +47,7 @@ target_link_libraries(my_app PRIVATE
 链接 `XlcLogger` 后：
 
 - 自动获得 **头文件搜索路径**（`#include "XlcLogger.hpp"`）。
-- 自动继承 **PUBLIC** 依赖：`spdlog::spdlog`、`Qt5::Core`。
+- 自动继承 **PUBLIC** 依赖：`spdlog::spdlog_header_only`、`Qt5::Core`。
 - 自动继承 **`SPDLOG_ACTIVE_LEVEL`** 编译定义（与本库 `CMakeLists.txt` 中 Debug/Release 策略一致），用于 `LOG_*` 宏的编译期裁剪。
 
 若仅静态链接 spdlog、不希望再暴露 Qt，需自行改本库 CMake（例如将 `Qt5::Core` 改为 `PRIVATE` 并自行处理 `defaultForCurrentBuild()` 中的宏），属于进阶定制。

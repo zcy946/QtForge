@@ -23,7 +23,7 @@ target_include_directories(XlcLogger
 target_link_libraries(XlcLogger
     PUBLIC
     Qt5::Core
-    spdlog::spdlog
+    spdlog::spdlog_header_only
 )
 
 # MSVC / MinGW：从 DLL 导出符号（实现主要在 .cpp，模板在头文件中内联）
