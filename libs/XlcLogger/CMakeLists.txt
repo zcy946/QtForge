@@ -8,7 +8,8 @@ set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 find_package(spdlog CONFIG REQUIRED)
-find_package(Qt5 REQUIRED COMPONENTS Core)
+
+option(XLCLOGGER_ENABLE_QT_FORMATTER "Enable Qt formatter support" ON)
 
 add_library(XlcLogger SHARED
     src/XlcLogger.cpp
@@ -22,9 +23,27 @@ target_include_directories(XlcLogger
 
 target_link_libraries(XlcLogger
     PUBLIC
-    Qt5::Core
     spdlog::spdlog_header_only
 )
+
+if(XLCLOGGER_ENABLE_QT_FORMATTER)
+    find_package(Qt5 QUIET COMPONENTS Core)
+
+    if(TARGET Qt5::Core)
+        add_library(XlcLoggerQtFormatter INTERFACE)
+        target_link_libraries(XlcLoggerQtFormatter
+            INTERFACE
+                XlcLogger
+                Qt5::Core
+        )
+        target_compile_definitions(XlcLoggerQtFormatter
+            INTERFACE
+                XLCLOGGER_ENABLE_QT_FORMATTER
+        )
+    else()
+        message(STATUS "XlcLoggerQtFormatter disabled: Qt5::Core was not found")
+    endif()
+endif()
 
 # MSVC / MinGW：从 DLL 导出符号（实现主要在 .cpp，模板在头文件中内联）
 set_target_properties(XlcLogger PROPERTIES

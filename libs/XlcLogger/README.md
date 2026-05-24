@@ -1,6 +1,6 @@
 # XlcLogger
 
-基于 [spdlog](https://github.com/gabime/spdlog) 封装的 C++17 日志库：控制台 + 可选轮转文件、可选异步输出、带源位置的 `LOG_*` 宏、可选 Qt 类型（`QString`、`QUrl` 等）的 `fmt` 格式化支持。以**动态库**形式提供，供 Qt / 非 Qt 应用链接使用（当前实现依赖 **Qt5::Core** 以使用 `QT_DEBUG` 等构建宏；头文件中 Qt 相关部分在检测到 `QT_CORE_LIB` 等或 `QString` 可用时启用）。
+基于 [spdlog](https://github.com/gabime/spdlog) 封装的 C++17 日志库：控制台 + 可选轮转文件、可选异步输出、带源位置的 `LOG_*` 宏、可选 Qt 类型（`QString`、`QUrl` 等）的 `fmt` 格式化支持。以**动态库**形式提供，核心库可供 Qt / 非 Qt 应用链接使用；Qt 类型 formatter 通过独立扩展目标显式启用。
 
 ---
 
@@ -25,16 +25,15 @@ libs/XlcLogger/
 | **CMake** ≥ 3.16 | |
 | **C++17** | `std::filesystem`、模板等 |
 | **spdlog** | `find_package(spdlog CONFIG REQUIRED)`，通常随 fmt |
-| **Qt5 Core** | 链接 `Qt5::Core`；头文件内 Qt 类型为可选 |
+| **Qt5 Core** | 仅使用 `XlcLoggerQtFormatter` 时需要 |
 
 ---
 
 ## 作为子工程接入 CMake
 
-在**已**能 `find_package(spdlog)`、`find_package(Qt5 Core)` 的工程根 `CMakeLists.txt` 中：
+在**已**能 `find_package(spdlog)` 的工程根 `CMakeLists.txt` 中：
 
 ```cmake
-# 建议在 find_package(spdlog) 与 Qt5 之后
 add_subdirectory("${CMAKE_SOURCE_DIR}/libs/XlcLogger")
 
 add_executable(my_app main.cpp ...)
@@ -47,10 +46,22 @@ target_link_libraries(my_app PRIVATE
 链接 `XlcLogger` 后：
 
 - 自动获得 **头文件搜索路径**（`#include "XlcLogger.hpp"`）。
-- 自动继承 **PUBLIC** 依赖：`spdlog::spdlog_header_only`、`Qt5::Core`。
+- 自动继承 **PUBLIC** 依赖：`spdlog::spdlog_header_only`。
 - 自动继承 **`SPDLOG_ACTIVE_LEVEL`** 编译定义（与本库 `CMakeLists.txt` 中 Debug/Release 策略一致），用于 `LOG_*` 宏的编译期裁剪。
 
-若仅静态链接 spdlog、不希望再暴露 Qt，需自行改本库 CMake（例如将 `Qt5::Core` 改为 `PRIVATE` 并自行处理 `defaultForCurrentBuild()` 中的宏），属于进阶定制。
+若需要直接记录 Qt 类型（如 `QString`、`QDateTime`、`QVariant`），额外链接 `XlcLoggerQtFormatter`：
+
+```cmake
+find_package(Qt5 COMPONENTS Core REQUIRED)
+add_subdirectory("${CMAKE_SOURCE_DIR}/libs/XlcLogger")
+
+target_link_libraries(my_app PRIVATE
+    XlcLogger
+    XlcLoggerQtFormatter
+)
+```
+
+`XlcLoggerQtFormatter` 是 `INTERFACE` 目标，会向调用方传递 `Qt5::Core` 和 `XLCLOGGER_ENABLE_QT_FORMATTER`。如果关闭 `XLCLOGGER_ENABLE_QT_FORMATTER` CMake 选项，或当前环境找不到 `Qt5::Core`，该扩展目标不会创建，核心 `XlcLogger` 仍可单独构建。
 
 ---
 
@@ -187,6 +198,7 @@ int main(int argc, char *argv[])
 
 | 宏 | 作用 |
 |----|------|
+| `XLCLOGGER_ENABLE_QT_FORMATTER` | 启用 Qt 类型的 `fmt::formatter` 特化；通常由 `XlcLoggerQtFormatter` 自动传递 |
 | `XLC_LOGGER_USE_PREFIXED_MACROS` | 定义 `XLC_LOG_TRACE` 等与 `LOG_*` 等价别名，减轻命名冲突顾虑 |
 
 ---

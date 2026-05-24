@@ -33,14 +33,10 @@
 /* NOTE vcpkg 安装的 spdlog 用上面 fmt；自行 clone 的 spdlog 可改用 spdlog/fmt/bundled/format.h */
 
 // -----------------------------------------------------------------------------
-// Qt：优先使用构建系统注入的模块宏，其次 __has_include 兜底
+// Qt formatter：仅在调用方显式链接 XlcLoggerQtFormatter 时启用
 // -----------------------------------------------------------------------------
-#if defined(QT_CORE_LIB) || defined(QT_GUI_LIB) || defined(QT_WIDGETS_LIB)
+#ifdef XLCLOGGER_ENABLE_QT_FORMATTER
 #define XLC_HAS_QT
-#elif defined(__has_include)
-#if __has_include(<QString>)
-#define XLC_HAS_QT
-#endif
 #endif
 
 #ifdef XLC_HAS_QT

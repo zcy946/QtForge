@@ -52,6 +52,7 @@ set_target_properties(${PROJECT_NAME} PROPERTIES
 # ==================== 链接库 ====================
 target_link_libraries(${PROJECT_NAME} PRIVATE
     XlcLogger
+    XlcLoggerQtFormatter
     XlcLogWidget
     Qt5::Core
     Qt5::Widgets
