@@ -28,6 +28,7 @@ target_link_libraries(XlcLogger
 
 # MSVC / MinGW：从 DLL 导出符号（实现主要在 .cpp，模板在头文件中内联）
 set_target_properties(XlcLogger PROPERTIES
+    DEBUG_POSTFIX d
     WINDOWS_EXPORT_ALL_SYMBOLS ON
 )
 

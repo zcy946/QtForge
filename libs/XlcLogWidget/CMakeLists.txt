@@ -32,6 +32,7 @@ target_link_libraries(XlcLogWidget
 )
 
 set_target_properties(XlcLogWidget PROPERTIES
+    DEBUG_POSTFIX d
     AUTOMOC ON
 )
 
