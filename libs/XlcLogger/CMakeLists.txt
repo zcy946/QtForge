@@ -33,12 +33,12 @@ if(XLCLOGGER_ENABLE_QT_FORMATTER)
         add_library(XlcLoggerQtFormatter INTERFACE)
         target_link_libraries(XlcLoggerQtFormatter
             INTERFACE
-                XlcLogger
-                Qt5::Core
+            XlcLogger
+            Qt5::Core
         )
         target_compile_definitions(XlcLoggerQtFormatter
             INTERFACE
-                XLCLOGGER_ENABLE_QT_FORMATTER
+            XLCLOGGER_ENABLE_QT_FORMATTER
         )
     else()
         message(STATUS "XlcLoggerQtFormatter disabled: Qt5::Core was not found")

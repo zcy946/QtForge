@@ -5,6 +5,7 @@
 
 #include "XlcLogger.hpp"
 
+#include <algorithm>
 #include <atomic>
 #include <cstdio>
 #include <filesystem>
@@ -99,18 +100,17 @@ bool doInit(const XlcLoggerOptions &opts)
     {
         spdlog::init_thread_pool(opts.asyncQueueSize, opts.asyncThreadCount);
         auto threadPool = spdlog::thread_pool();
-        spdlogLogger = std::make_shared<spdlog::async_logger>(
-            "multi_sink",
-            spdlog::sinks_init_list{consoleSink, fileSink},
-            threadPool,
-            spdlog::async_overflow_policy::block);
+        spdlogLogger = std::make_shared<spdlog::async_logger>("multi_sink",
+                                                              spdlog::sinks_init_list{consoleSink, fileSink},
+                                                              threadPool,
+                                                              spdlog::async_overflow_policy::block);
     }
     else
     {
         if (fileSink)
         {
-            spdlogLogger = std::make_shared<spdlog::logger>("multi_sink",
-                                                            spdlog::sinks_init_list{consoleSink, fileSink});
+            spdlogLogger =
+                std::make_shared<spdlog::logger>("multi_sink", spdlog::sinks_init_list{consoleSink, fileSink});
         }
         else
         {
@@ -201,6 +201,50 @@ void XlcLogger::setLevel(spdlog::level::level_enum lvl)
             sink->set_level(lvl);
         }
     }
+}
+
+/**
+ * @copydoc XlcLogger::addSinkToDefaultLogger
+ */
+bool XlcLogger::addSinkToDefaultLogger(const spdlog::sink_ptr &sink)
+{
+    if (!sink)
+    {
+        return false;
+    }
+    auto logger = spdlog::default_logger();
+    if (!logger)
+    {
+        return false;
+    }
+
+    logger->sinks().push_back(sink);
+    return true;
+}
+
+/**
+ * @copydoc XlcLogger::removeSinkFromDefaultLogger
+ */
+bool XlcLogger::removeSinkFromDefaultLogger(const spdlog::sink_ptr &sink)
+{
+    if (!sink)
+    {
+        return false;
+    }
+    auto logger = spdlog::default_logger();
+    if (!logger)
+    {
+        return false;
+    }
+
+    auto &sinks = logger->sinks();
+    const auto it = std::find(sinks.begin(), sinks.end(), sink);
+    if (it == sinks.end())
+    {
+        return false;
+    }
+    sinks.erase(it);
+    return true;
 }
 
 /**

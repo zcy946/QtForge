@@ -12,9 +12,9 @@
 #include <QMargins>
 #include <QPoint>
 #include <QPointF>
-#include <QRegularExpression>
 #include <QRect>
 #include <QRectF>
+#include <QRegularExpression>
 #include <QSize>
 #include <QSizeF>
 #include <QString>
@@ -68,7 +68,8 @@ int main(int argc, char **argv)
     const QLine qtLine(0, 1, 2, 3);
     const QLineF qtLineF(0.5, 1.25, 2.5, 3.75);
     const QMargins qtMargins(1, 2, 3, 4);
-    LOG_TRACE("Qt Core text/url/date: QString='{}', QByteArray='{}', QStringList={}, QUrl='{}', QDate={}, QTime={}, QDateTime={}",
+    LOG_TRACE("Qt Core text/url/date: QString='{}', QByteArray='{}', QStringList={}, QUrl='{}', QDate={}, QTime={}, "
+              "QDateTime={}",
               qtString,
               qtByteArray,
               qtStringList,
@@ -76,7 +77,8 @@ int main(int argc, char **argv)
               qtDate,
               qtTime,
               qtDateTime);
-    LOG_DEBUG("Qt Core json/variant: QJsonDocument={}, QJsonObject={}, QJsonArray={}, QJsonValue={}, QVariant={}, QVariantList={}, QVariantMap={}",
+    LOG_DEBUG("Qt Core json/variant: QJsonDocument={}, QJsonObject={}, QJsonArray={}, QJsonValue={}, QVariant={}, "
+              "QVariantList={}, QVariantMap={}",
               qtJsonDocument,
               qtJsonObject,
               qtJsonArray,
@@ -84,7 +86,8 @@ int main(int argc, char **argv)
               qtVariant,
               qtVariantList,
               qtVariantMap);
-    LOG_INFO("Qt Core misc/geometry: QUuid={}, QVersionNumber={}, QRegularExpression='{}', QSize={}, QSizeF={}, QPoint={}, QPointF={}, QRect={}, QRectF={}, QLine={}, QLineF={}, QMargins={}",
+    LOG_INFO("Qt Core misc/geometry: QUuid={}, QVersionNumber={}, QRegularExpression='{}', QSize={}, QSizeF={}, "
+             "QPoint={}, QPointF={}, QRect={}, QRectF={}, QLine={}, QLineF={}, QMargins={}",
              qtUuid,
              qtVersion,
              qtRegularExpression,

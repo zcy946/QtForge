@@ -1,0 +1,88 @@
+---
+# 本配置只作用于 C/C++/Objective-C 家族源码。
+Language: Cpp
+
+# 以 Microsoft 风格作为基础，再用下面的规则覆盖。
+BasedOnStyle: Microsoft
+
+# 每一级缩进使用 4 个空格。
+IndentWidth: 4
+
+# Tab 的显示宽度按 4 列计算。
+TabWidth: 4
+
+# 不使用真实 Tab 字符，统一用空格缩进。
+UseTab: Never
+
+# 单行最长 120 列，超过后 clang-format 会尝试换行。
+ColumnLimit: 120
+
+# 使用 Allman 大括号风格：左大括号单独一行。
+BreakBeforeBraces: Allman
+
+# 指针星号靠近变量名，例如 QWidget *parent。
+PointerAlignment: Right
+
+# 引用符号按指针规则处理，例如 const QString &text。
+ReferenceAlignment: Pointer
+
+# public/private/protected 比成员少缩进 4 个空格。
+AccessModifierOffset: -4
+
+# 访问控制关键字本身不额外缩进。
+IndentAccessModifiers: false
+
+# switch 的 case 标签相对 switch 块缩进。
+IndentCaseLabels: true
+
+# namespace 内部不额外缩进，避免大命名空间导致整体右移。
+NamespaceIndentation: None
+
+# 只允许空函数写成单行，例如 void f() {}。
+AllowShortFunctionsOnASingleLine: Empty
+
+# if 语句不压成单行。
+AllowShortIfStatementsOnASingleLine: Never
+
+# for/while/do 循环不压成单行。
+AllowShortLoopsOnASingleLine: false
+
+# 多行参数列表按左括号后的位置对齐。
+AlignAfterOpenBracket: Align
+
+# 不按等号连续对齐赋值语句，减少无意义的大面积 diff。
+AlignConsecutiveAssignments: None
+
+# 不按列连续对齐变量声明，保持修改时 diff 更小。
+AlignConsecutiveDeclarations: None
+
+# 多行表达式中的操作符按表达式结构对齐。
+AlignOperands: Align
+
+# 函数调用参数换行后，每个参数尽量单独一行。
+BinPackArguments: false
+
+# 函数声明/定义形参换行后，每个形参尽量单独一行。
+BinPackParameters: false
+
+# 使用 C++11 花括号初始化风格，例如 QStringList{...}。
+Cpp11BracedListStyle: true
+
+# include 按大小写敏感方式排序。
+SortIncludes: CaseSensitive
+
+# 保留原有 include 分组，不把不同 include 块合并。
+IncludeBlocks: Preserve
+
+# 只在控制语句关键字后加空格，例如 if (...)，函数调用不加。
+SpaceBeforeParens: ControlStatements
+
+# 圆括号内部不额外加空格，例如 f(a) 而不是 f( a )。
+SpacesInParentheses: false
+
+# 方括号内部不额外加空格，例如 arr[i]。
+SpacesInSquareBrackets: false
+
+# 按 clang-format 当前支持的最新 C++ 语法解析代码。
+Standard: Latest
+...

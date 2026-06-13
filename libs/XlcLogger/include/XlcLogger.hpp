@@ -52,9 +52,9 @@
 #include <QMargins>
 #include <QPoint>
 #include <QPointF>
-#include <QRegularExpression>
 #include <QRect>
 #include <QRectF>
+#include <QRegularExpression>
 #include <QSize>
 #include <QSizeF>
 #include <QString>
@@ -151,6 +151,20 @@ public:
     static void setLevel(spdlog::level::level_enum lvl);
 
     /**
+     * @brief 向 XlcLogger DLL 内部的默认 logger 追加 sink。
+     * @param[in] sink 要追加的 sink。
+     * @return `true` 已追加；`false` 表示 sink 为空或默认 logger 尚不可用。
+     */
+    static bool addSinkToDefaultLogger(const spdlog::sink_ptr &sink);
+
+    /**
+     * @brief 从 XlcLogger DLL 内部的默认 logger 移除 sink。
+     * @param[in] sink 要移除的 sink。
+     * @return `true` 已移除；`false` 表示 sink 为空、默认 logger 不可用或未找到。
+     */
+    static bool removeSinkFromDefaultLogger(const spdlog::sink_ptr &sink);
+
+    /**
      * @brief 仅调整控制台 sink 级别（若已初始化且该 sink 仍存在）。
      * @param[in] lvl spdlog 级别枚举。
      */
@@ -177,8 +191,7 @@ public:
      * @param[in] value 待写入日志的值。
      * @return 原样返回 `value`。
      */
-    template <typename T>
-    static auto convert(const T &value) -> decltype(value)
+    template <typename T> static auto convert(const T &value) -> decltype(value)
     {
         return value;
     }
@@ -206,8 +219,7 @@ public:
      * @brief Trace 级别，带源位置。
      * @tparam Args 格式化参数类型。
      */
-    template <typename... Args>
-    static void trace(spdlog::source_loc loc, const char *fmt, Args &&...args)
+    template <typename... Args> static void trace(spdlog::source_loc loc, const char *fmt, Args &&...args)
     {
         log(spdlog::level::trace, loc, fmt, std::forward<Args>(args)...);
     }
@@ -216,8 +228,7 @@ public:
      * @brief Debug 级别，带源位置。
      * @tparam Args 格式化参数类型。
      */
-    template <typename... Args>
-    static void debug(spdlog::source_loc loc, const char *fmt, Args &&...args)
+    template <typename... Args> static void debug(spdlog::source_loc loc, const char *fmt, Args &&...args)
     {
         log(spdlog::level::debug, loc, fmt, std::forward<Args>(args)...);
     }
@@ -226,8 +237,7 @@ public:
      * @brief Info 级别，带源位置。
      * @tparam Args 格式化参数类型。
      */
-    template <typename... Args>
-    static void info(spdlog::source_loc loc, const char *fmt, Args &&...args)
+    template <typename... Args> static void info(spdlog::source_loc loc, const char *fmt, Args &&...args)
     {
         log(spdlog::level::info, loc, fmt, std::forward<Args>(args)...);
     }
@@ -236,8 +246,7 @@ public:
      * @brief Warn 级别，带源位置。
      * @tparam Args 格式化参数类型。
      */
-    template <typename... Args>
-    static void warn(spdlog::source_loc loc, const char *fmt, Args &&...args)
+    template <typename... Args> static void warn(spdlog::source_loc loc, const char *fmt, Args &&...args)
     {
         log(spdlog::level::warn, loc, fmt, std::forward<Args>(args)...);
     }
@@ -246,8 +255,7 @@ public:
      * @brief Error 级别，带源位置。
      * @tparam Args 格式化参数类型。
      */
-    template <typename... Args>
-    static void error(spdlog::source_loc loc, const char *fmt, Args &&...args)
+    template <typename... Args> static void error(spdlog::source_loc loc, const char *fmt, Args &&...args)
     {
         log(spdlog::level::err, loc, fmt, std::forward<Args>(args)...);
     }
@@ -256,8 +264,7 @@ public:
      * @brief Critical 级别，带源位置。
      * @tparam Args 格式化参数类型。
      */
-    template <typename... Args>
-    static void critical(spdlog::source_loc loc, const char *fmt, Args &&...args)
+    template <typename... Args> static void critical(spdlog::source_loc loc, const char *fmt, Args &&...args)
     {
         log(spdlog::level::critical, loc, fmt, std::forward<Args>(args)...);
     }
@@ -325,32 +332,38 @@ public:
  */
 /// @{
 #if SPDLOG_ACTIVE_LEVEL <= SPDLOG_LEVEL_TRACE
-#define LOG_M_TRACE(lg, ...) (lg)->log(spdlog::source_loc{__FILE__, __LINE__, SPDLOG_FUNCTION}, spdlog::level::trace, __VA_ARGS__)
+#define LOG_M_TRACE(lg, ...)                                                                                           \
+    (lg)->log(spdlog::source_loc{__FILE__, __LINE__, SPDLOG_FUNCTION}, spdlog::level::trace, __VA_ARGS__)
 #else
 #define LOG_M_TRACE(lg, ...) (void)0
 #endif
 #if SPDLOG_ACTIVE_LEVEL <= SPDLOG_LEVEL_DEBUG
-#define LOG_M_DEBUG(lg, ...) (lg)->log(spdlog::source_loc{__FILE__, __LINE__, SPDLOG_FUNCTION}, spdlog::level::debug, __VA_ARGS__)
+#define LOG_M_DEBUG(lg, ...)                                                                                           \
+    (lg)->log(spdlog::source_loc{__FILE__, __LINE__, SPDLOG_FUNCTION}, spdlog::level::debug, __VA_ARGS__)
 #else
 #define LOG_M_DEBUG(lg, ...) (void)0
 #endif
 #if SPDLOG_ACTIVE_LEVEL <= SPDLOG_LEVEL_INFO
-#define LOG_M_INFO(lg, ...) (lg)->log(spdlog::source_loc{__FILE__, __LINE__, SPDLOG_FUNCTION}, spdlog::level::info, __VA_ARGS__)
+#define LOG_M_INFO(lg, ...)                                                                                            \
+    (lg)->log(spdlog::source_loc{__FILE__, __LINE__, SPDLOG_FUNCTION}, spdlog::level::info, __VA_ARGS__)
 #else
 #define LOG_M_INFO(lg, ...) (void)0
 #endif
 #if SPDLOG_ACTIVE_LEVEL <= SPDLOG_LEVEL_WARN
-#define LOG_M_WARN(lg, ...) (lg)->log(spdlog::source_loc{__FILE__, __LINE__, SPDLOG_FUNCTION}, spdlog::level::warn, __VA_ARGS__)
+#define LOG_M_WARN(lg, ...)                                                                                            \
+    (lg)->log(spdlog::source_loc{__FILE__, __LINE__, SPDLOG_FUNCTION}, spdlog::level::warn, __VA_ARGS__)
 #else
 #define LOG_M_WARN(lg, ...) (void)0
 #endif
 #if SPDLOG_ACTIVE_LEVEL <= SPDLOG_LEVEL_ERROR
-#define LOG_M_ERROR(lg, ...) (lg)->log(spdlog::source_loc{__FILE__, __LINE__, SPDLOG_FUNCTION}, spdlog::level::err, __VA_ARGS__)
+#define LOG_M_ERROR(lg, ...)                                                                                           \
+    (lg)->log(spdlog::source_loc{__FILE__, __LINE__, SPDLOG_FUNCTION}, spdlog::level::err, __VA_ARGS__)
 #else
 #define LOG_M_ERROR(lg, ...) (void)0
 #endif
 #if SPDLOG_ACTIVE_LEVEL <= SPDLOG_LEVEL_CRITICAL
-#define LOG_M_CRITICAL(lg, ...) (lg)->log(spdlog::source_loc{__FILE__, __LINE__, SPDLOG_FUNCTION}, spdlog::level::critical, __VA_ARGS__)
+#define LOG_M_CRITICAL(lg, ...)                                                                                        \
+    (lg)->log(spdlog::source_loc{__FILE__, __LINE__, SPDLOG_FUNCTION}, spdlog::level::critical, __VA_ARGS__)
 #else
 #define LOG_M_CRITICAL(lg, ...) (void)0
 #endif
@@ -365,38 +378,32 @@ namespace xlc
 inline namespace log
 {
 /** @brief Trace：等价于 `XlcLogger::trace` + 当前位置。 */
-template <typename... Args>
-void trace(const char *fmt, Args &&...args)
+template <typename... Args> void trace(const char *fmt, Args &&...args)
 {
     XlcLogger::trace({__FILE__, __LINE__, SPDLOG_FUNCTION}, fmt, std::forward<Args>(args)...);
 }
 /** @brief Debug：等价于 `XlcLogger::debug` + 当前位置。 */
-template <typename... Args>
-void debug(const char *fmt, Args &&...args)
+template <typename... Args> void debug(const char *fmt, Args &&...args)
 {
     XlcLogger::debug({__FILE__, __LINE__, SPDLOG_FUNCTION}, fmt, std::forward<Args>(args)...);
 }
 /** @brief Info：等价于 `XlcLogger::info` + 当前位置。 */
-template <typename... Args>
-void info(const char *fmt, Args &&...args)
+template <typename... Args> void info(const char *fmt, Args &&...args)
 {
     XlcLogger::info({__FILE__, __LINE__, SPDLOG_FUNCTION}, fmt, std::forward<Args>(args)...);
 }
 /** @brief Warn：等价于 `XlcLogger::warn` + 当前位置。 */
-template <typename... Args>
-void warn(const char *fmt, Args &&...args)
+template <typename... Args> void warn(const char *fmt, Args &&...args)
 {
     XlcLogger::warn({__FILE__, __LINE__, SPDLOG_FUNCTION}, fmt, std::forward<Args>(args)...);
 }
 /** @brief Error：等价于 `XlcLogger::error` + 当前位置。 */
-template <typename... Args>
-void error(const char *fmt, Args &&...args)
+template <typename... Args> void error(const char *fmt, Args &&...args)
 {
     XlcLogger::error({__FILE__, __LINE__, SPDLOG_FUNCTION}, fmt, std::forward<Args>(args)...);
 }
 /** @brief Critical：等价于 `XlcLogger::critical` + 当前位置。 */
-template <typename... Args>
-void critical(const char *fmt, Args &&...args)
+template <typename... Args> void critical(const char *fmt, Args &&...args)
 {
     XlcLogger::critical({__FILE__, __LINE__, SPDLOG_FUNCTION}, fmt, std::forward<Args>(args)...);
 }
@@ -473,24 +480,21 @@ inline std::string toCompactJson(const QVariant &value)
  * @brief `QString`：按 UTF-8 输出。
  * @note 极高频路径可在外部先 `toUtf8()` 再传 `string_view`/`std::string`，避免重复分配。
  */
-template <>
-struct fmt::formatter<QString>
+template <> struct fmt::formatter<QString>
 {
     constexpr auto parse(format_parse_context &ctx) -> decltype(ctx.begin())
     {
         return ctx.begin();
     }
 
-    template <typename FormatContext>
-    auto format(const QString &q, FormatContext &ctx) const -> decltype(ctx.out())
+    template <typename FormatContext> auto format(const QString &q, FormatContext &ctx) const -> decltype(ctx.out())
     {
         return fmt::format_to(ctx.out(), "{}", xlc::logger_detail::toStdString(q));
     }
 };
 
 /** @brief `QByteArray`：按原始字节输出，常用于 UTF-8 文本缓冲。 */
-template <>
-struct fmt::formatter<QByteArray>
+template <> struct fmt::formatter<QByteArray>
 {
     constexpr auto parse(format_parse_context &ctx) -> decltype(ctx.begin())
     {
@@ -505,8 +509,7 @@ struct fmt::formatter<QByteArray>
 };
 
 /** @brief `QStringList`：格式为 `["a", "b"]`。 */
-template <>
-struct fmt::formatter<QStringList>
+template <> struct fmt::formatter<QStringList>
 {
     constexpr auto parse(format_parse_context &ctx) -> decltype(ctx.begin())
     {
@@ -527,48 +530,42 @@ struct fmt::formatter<QStringList>
 };
 
 /** @brief `QUrl`：默认 `QUrl::PrettyDecoded` 字符串形式（UTF-8）。 */
-template <>
-struct fmt::formatter<QUrl>
+template <> struct fmt::formatter<QUrl>
 {
     constexpr auto parse(format_parse_context &ctx) -> decltype(ctx.begin())
     {
         return ctx.begin();
     }
 
-    template <typename FormatContext>
-    auto format(const QUrl &u, FormatContext &ctx) const -> decltype(ctx.out())
+    template <typename FormatContext> auto format(const QUrl &u, FormatContext &ctx) const -> decltype(ctx.out())
     {
         return fmt::format_to(ctx.out(), "{}", xlc::logger_detail::toStdString(u.toString(QUrl::PrettyDecoded)));
     }
 };
 
 /** @brief `QDate`：使用 `Qt::ISODate`。 */
-template <>
-struct fmt::formatter<QDate>
+template <> struct fmt::formatter<QDate>
 {
     constexpr auto parse(format_parse_context &ctx) -> decltype(ctx.begin())
     {
         return ctx.begin();
     }
 
-    template <typename FormatContext>
-    auto format(const QDate &date, FormatContext &ctx) const -> decltype(ctx.out())
+    template <typename FormatContext> auto format(const QDate &date, FormatContext &ctx) const -> decltype(ctx.out())
     {
         return fmt::format_to(ctx.out(), "{}", xlc::logger_detail::toStdString(date.toString(Qt::ISODate)));
     }
 };
 
 /** @brief `QTime`：Qt 5.8+ 使用 `ISODateWithMs`，否则 `ISODate`。 */
-template <>
-struct fmt::formatter<QTime>
+template <> struct fmt::formatter<QTime>
 {
     constexpr auto parse(format_parse_context &ctx) -> decltype(ctx.begin())
     {
         return ctx.begin();
     }
 
-    template <typename FormatContext>
-    auto format(const QTime &time, FormatContext &ctx) const -> decltype(ctx.out())
+    template <typename FormatContext> auto format(const QTime &time, FormatContext &ctx) const -> decltype(ctx.out())
     {
 #if QT_VERSION >= QT_VERSION_CHECK(5, 8, 0)
         const QString isoString = time.toString(Qt::ISODateWithMs);
@@ -580,16 +577,14 @@ struct fmt::formatter<QTime>
 };
 
 /** @brief `QDateTime`：Qt 5.8+ 使用 `ISODateWithMs`，否则 `ISODate`。 */
-template <>
-struct fmt::formatter<QDateTime>
+template <> struct fmt::formatter<QDateTime>
 {
     constexpr auto parse(format_parse_context &ctx) -> decltype(ctx.begin())
     {
         return ctx.begin();
     }
 
-    template <typename FormatContext>
-    auto format(const QDateTime &dt, FormatContext &ctx) const -> decltype(ctx.out())
+    template <typename FormatContext> auto format(const QDateTime &dt, FormatContext &ctx) const -> decltype(ctx.out())
     {
 #if QT_VERSION >= QT_VERSION_CHECK(5, 8, 0)
         const QString isoString = dt.toString(Qt::ISODateWithMs);
@@ -601,8 +596,7 @@ struct fmt::formatter<QDateTime>
 };
 
 /** @brief `QJsonDocument`：紧凑 JSON。 */
-template <>
-struct fmt::formatter<QJsonDocument>
+template <> struct fmt::formatter<QJsonDocument>
 {
     constexpr auto parse(format_parse_context &ctx) -> decltype(ctx.begin())
     {
@@ -617,8 +611,7 @@ struct fmt::formatter<QJsonDocument>
 };
 
 /** @brief `QJsonObject`：紧凑 JSON 对象。 */
-template <>
-struct fmt::formatter<QJsonObject>
+template <> struct fmt::formatter<QJsonObject>
 {
     constexpr auto parse(format_parse_context &ctx) -> decltype(ctx.begin())
     {
@@ -633,8 +626,7 @@ struct fmt::formatter<QJsonObject>
 };
 
 /** @brief `QJsonArray`：紧凑 JSON 数组。 */
-template <>
-struct fmt::formatter<QJsonArray>
+template <> struct fmt::formatter<QJsonArray>
 {
     constexpr auto parse(format_parse_context &ctx) -> decltype(ctx.begin())
     {
@@ -649,8 +641,7 @@ struct fmt::formatter<QJsonArray>
 };
 
 /** @brief `QJsonValue`：紧凑 JSON 值。 */
-template <>
-struct fmt::formatter<QJsonValue>
+template <> struct fmt::formatter<QJsonValue>
 {
     constexpr auto parse(format_parse_context &ctx) -> decltype(ctx.begin())
     {
@@ -665,8 +656,7 @@ struct fmt::formatter<QJsonValue>
 };
 
 /** @brief `QVariant`：优先按 JSON 语义输出，无法转换时回退到 `toString()`。 */
-template <>
-struct fmt::formatter<QVariant>
+template <> struct fmt::formatter<QVariant>
 {
     constexpr auto parse(format_parse_context &ctx) -> decltype(ctx.begin())
     {
@@ -681,8 +671,7 @@ struct fmt::formatter<QVariant>
 };
 
 /** @brief `QVariantList`：紧凑 JSON 数组。 */
-template <>
-struct fmt::formatter<QVariantList>
+template <> struct fmt::formatter<QVariantList>
 {
     constexpr auto parse(format_parse_context &ctx) -> decltype(ctx.begin())
     {
@@ -697,8 +686,7 @@ struct fmt::formatter<QVariantList>
 };
 
 /** @brief `QVariantMap`：紧凑 JSON 对象。 */
-template <>
-struct fmt::formatter<QVariantMap>
+template <> struct fmt::formatter<QVariantMap>
 {
     constexpr auto parse(format_parse_context &ctx) -> decltype(ctx.begin())
     {
@@ -713,24 +701,21 @@ struct fmt::formatter<QVariantMap>
 };
 
 /** @brief `QUuid`：无大括号字符串形式。 */
-template <>
-struct fmt::formatter<QUuid>
+template <> struct fmt::formatter<QUuid>
 {
     constexpr auto parse(format_parse_context &ctx) -> decltype(ctx.begin())
     {
         return ctx.begin();
     }
 
-    template <typename FormatContext>
-    auto format(const QUuid &uuid, FormatContext &ctx) const -> decltype(ctx.out())
+    template <typename FormatContext> auto format(const QUuid &uuid, FormatContext &ctx) const -> decltype(ctx.out())
     {
         return fmt::format_to(ctx.out(), "{}", xlc::logger_detail::toStdString(uuid.toString(QUuid::WithoutBraces)));
     }
 };
 
 /** @brief `QVersionNumber`：标准点分版本号。 */
-template <>
-struct fmt::formatter<QVersionNumber>
+template <> struct fmt::formatter<QVersionNumber>
 {
     constexpr auto parse(format_parse_context &ctx) -> decltype(ctx.begin())
     {
@@ -745,8 +730,7 @@ struct fmt::formatter<QVersionNumber>
 };
 
 /** @brief `QRegularExpression`：输出 pattern。 */
-template <>
-struct fmt::formatter<QRegularExpression>
+template <> struct fmt::formatter<QRegularExpression>
 {
     constexpr auto parse(format_parse_context &ctx) -> decltype(ctx.begin())
     {
@@ -761,136 +745,119 @@ struct fmt::formatter<QRegularExpression>
 };
 
 /** @brief `QSize`：格式为 `wxh`。 */
-template <>
-struct fmt::formatter<QSize>
+template <> struct fmt::formatter<QSize>
 {
     constexpr auto parse(format_parse_context &ctx) -> decltype(ctx.begin())
     {
         return ctx.begin();
     }
 
-    template <typename FormatContext>
-    auto format(const QSize &s, FormatContext &ctx) const -> decltype(ctx.out())
+    template <typename FormatContext> auto format(const QSize &s, FormatContext &ctx) const -> decltype(ctx.out())
     {
         return fmt::format_to(ctx.out(), "{}x{}", s.width(), s.height());
     }
 };
 
 /** @brief `QSizeF`：格式为 `wxh`。 */
-template <>
-struct fmt::formatter<QSizeF>
+template <> struct fmt::formatter<QSizeF>
 {
     constexpr auto parse(format_parse_context &ctx) -> decltype(ctx.begin())
     {
         return ctx.begin();
     }
 
-    template <typename FormatContext>
-    auto format(const QSizeF &s, FormatContext &ctx) const -> decltype(ctx.out())
+    template <typename FormatContext> auto format(const QSizeF &s, FormatContext &ctx) const -> decltype(ctx.out())
     {
         return fmt::format_to(ctx.out(), "{}x{}", s.width(), s.height());
     }
 };
 
 /** @brief `QPoint`：格式为 `x,y`。 */
-template <>
-struct fmt::formatter<QPoint>
+template <> struct fmt::formatter<QPoint>
 {
     constexpr auto parse(format_parse_context &ctx) -> decltype(ctx.begin())
     {
         return ctx.begin();
     }
 
-    template <typename FormatContext>
-    auto format(const QPoint &p, FormatContext &ctx) const -> decltype(ctx.out())
+    template <typename FormatContext> auto format(const QPoint &p, FormatContext &ctx) const -> decltype(ctx.out())
     {
         return fmt::format_to(ctx.out(), "{},{}", p.x(), p.y());
     }
 };
 
 /** @brief `QPointF`：格式为 `x,y`。 */
-template <>
-struct fmt::formatter<QPointF>
+template <> struct fmt::formatter<QPointF>
 {
     constexpr auto parse(format_parse_context &ctx) -> decltype(ctx.begin())
     {
         return ctx.begin();
     }
 
-    template <typename FormatContext>
-    auto format(const QPointF &p, FormatContext &ctx) const -> decltype(ctx.out())
+    template <typename FormatContext> auto format(const QPointF &p, FormatContext &ctx) const -> decltype(ctx.out())
     {
         return fmt::format_to(ctx.out(), "{},{}", p.x(), p.y());
     }
 };
 
 /** @brief `QRect`：格式为 `x,y wxh`。 */
-template <>
-struct fmt::formatter<QRect>
+template <> struct fmt::formatter<QRect>
 {
     constexpr auto parse(format_parse_context &ctx) -> decltype(ctx.begin())
     {
         return ctx.begin();
     }
 
-    template <typename FormatContext>
-    auto format(const QRect &r, FormatContext &ctx) const -> decltype(ctx.out())
+    template <typename FormatContext> auto format(const QRect &r, FormatContext &ctx) const -> decltype(ctx.out())
     {
         return fmt::format_to(ctx.out(), "{},{} {}x{}", r.x(), r.y(), r.width(), r.height());
     }
 };
 
 /** @brief `QRectF`：格式为 `x,y wxh`。 */
-template <>
-struct fmt::formatter<QRectF>
+template <> struct fmt::formatter<QRectF>
 {
     constexpr auto parse(format_parse_context &ctx) -> decltype(ctx.begin())
     {
         return ctx.begin();
     }
 
-    template <typename FormatContext>
-    auto format(const QRectF &r, FormatContext &ctx) const -> decltype(ctx.out())
+    template <typename FormatContext> auto format(const QRectF &r, FormatContext &ctx) const -> decltype(ctx.out())
     {
         return fmt::format_to(ctx.out(), "{},{} {}x{}", r.x(), r.y(), r.width(), r.height());
     }
 };
 
 /** @brief `QLine`：格式为 `x1,y1 -> x2,y2`。 */
-template <>
-struct fmt::formatter<QLine>
+template <> struct fmt::formatter<QLine>
 {
     constexpr auto parse(format_parse_context &ctx) -> decltype(ctx.begin())
     {
         return ctx.begin();
     }
 
-    template <typename FormatContext>
-    auto format(const QLine &line, FormatContext &ctx) const -> decltype(ctx.out())
+    template <typename FormatContext> auto format(const QLine &line, FormatContext &ctx) const -> decltype(ctx.out())
     {
         return fmt::format_to(ctx.out(), "{},{} -> {},{}", line.x1(), line.y1(), line.x2(), line.y2());
     }
 };
 
 /** @brief `QLineF`：格式为 `x1,y1 -> x2,y2`。 */
-template <>
-struct fmt::formatter<QLineF>
+template <> struct fmt::formatter<QLineF>
 {
     constexpr auto parse(format_parse_context &ctx) -> decltype(ctx.begin())
     {
         return ctx.begin();
     }
 
-    template <typename FormatContext>
-    auto format(const QLineF &line, FormatContext &ctx) const -> decltype(ctx.out())
+    template <typename FormatContext> auto format(const QLineF &line, FormatContext &ctx) const -> decltype(ctx.out())
     {
         return fmt::format_to(ctx.out(), "{},{} -> {},{}", line.x1(), line.y1(), line.x2(), line.y2());
     }
 };
 
 /** @brief `QMargins`：格式为 `left,top,right,bottom`。 */
-template <>
-struct fmt::formatter<QMargins>
+template <> struct fmt::formatter<QMargins>
 {
     constexpr auto parse(format_parse_context &ctx) -> decltype(ctx.begin())
     {
@@ -900,11 +867,8 @@ struct fmt::formatter<QMargins>
     template <typename FormatContext>
     auto format(const QMargins &margins, FormatContext &ctx) const -> decltype(ctx.out())
     {
-        return fmt::format_to(ctx.out(), "{},{},{},{}",
-                              margins.left(),
-                              margins.top(),
-                              margins.right(),
-                              margins.bottom());
+        return fmt::format_to(
+            ctx.out(), "{},{},{},{}", margins.left(), margins.top(), margins.right(), margins.bottom());
     }
 };
 #endif

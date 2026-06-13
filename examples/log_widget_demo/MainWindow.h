@@ -5,9 +5,10 @@
  * @version 0.1
  * @date 2026-03-06
  *
- * @copyright Copyright (c) 2026  广州二研科技有限公司
+ * @copyright Copyright (c) 2026  夏黎辰
  *
  */
+
 
 #ifndef MAINWINDOW_H
 #define MAINWINDOW_H

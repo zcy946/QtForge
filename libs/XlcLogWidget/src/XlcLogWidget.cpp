@@ -4,6 +4,7 @@
  */
 
 #include "XlcLogWidget.h"
+#include "XlcLogger.hpp"
 
 #include <QAbstractItemView>
 #include <QApplication>
@@ -23,11 +24,11 @@
 #include <QSortFilterProxyModel>
 #include <QStandardItem>
 #include <QStandardItemModel>
-#include <QStyledItemDelegate>
 #include <QStyle>
 #include <QStyleOptionViewItem>
-#include <QVariant>
+#include <QStyledItemDelegate>
 #include <QVBoxLayout>
+#include <QVariant>
 
 #include <algorithm>
 #include <array>
@@ -59,9 +60,8 @@ bool isDisplayLevel(int level)
  */
 int parseLevelFromText(const QString &text)
 {
-    static const QRegularExpression re(
-        QStringLiteral(R"(\[(trace|debug|info|warn|warning|err|error|critical)\])"),
-        QRegularExpression::CaseInsensitiveOption);
+    static const QRegularExpression re(QStringLiteral(R"(\[(trace|debug|info|warn|warning|err|error|critical)\])"),
+                                       QRegularExpression::CaseInsensitiveOption);
     const auto m = re.match(text);
     if (!m.hasMatch())
     {
@@ -146,7 +146,10 @@ int keywordToLevelIndex(const QString &kwLower)
 
 class XlcLogWidgetPrivate;
 
-void drawColoredLogLine(QPainter *painter, const QRect &rect, const QString &text, const QColor &defaultColor,
+void drawColoredLogLine(QPainter *painter,
+                        const QRect &rect,
+                        const QString &text,
+                        const QColor &defaultColor,
                         const XlcLogWidgetPrivate *style);
 
 class XlcLogItemDelegate final : public QStyledItemDelegate
@@ -167,10 +170,7 @@ private:
 class XlcLogFilterProxyModel final : public QSortFilterProxyModel
 {
 public:
-    explicit XlcLogFilterProxyModel(QObject *parent = nullptr)
-        : QSortFilterProxyModel(parent)
-    {
-    }
+    explicit XlcLogFilterProxyModel(QObject *parent = nullptr) : QSortFilterProxyModel(parent) {}
 
     enum FilterMode
     {
@@ -244,8 +244,8 @@ private:
     void copySelectionToClipboard()
     {
         QModelIndexList rows = selectionModel()->selectedRows(0);
-        std::sort(rows.begin(), rows.end(), [](const QModelIndex &a, const QModelIndex &b)
-                  { return a.row() < b.row(); });
+        std::sort(
+            rows.begin(), rows.end(), [](const QModelIndex &a, const QModelIndex &b) { return a.row() < b.row(); });
         QStringList out;
         out.reserve(rows.size());
         for (const QModelIndex &idx : rows)
@@ -256,14 +256,10 @@ private:
     }
 };
 
-template <typename Mutex>
-class QtListSink : public spdlog::sinks::base_sink<Mutex>
+template <typename Mutex> class QtListSink : public spdlog::sinks::base_sink<Mutex>
 {
 public:
-    explicit QtListSink(QPointer<XlcLogWidget> xlcLogWidget)
-        : m_xlcLogWidget(std::move(xlcLogWidget))
-    {
-    }
+    explicit QtListSink(QPointer<XlcLogWidget> xlcLogWidget) : m_xlcLogWidget(std::move(xlcLogWidget)) {}
 
 protected:
     void sink_it_(const spdlog::details::log_msg &msg) override
@@ -286,8 +282,8 @@ protected:
 
         const QString line = QString::fromUtf8(formatted.data(), static_cast<int>(formatted.size()));
         const int lvl = static_cast<int>(msg.level);
-        QMetaObject::invokeMethod(w, "slot_appendLineWithLevel", Qt::QueuedConnection, Q_ARG(QString, line),
-                                  Q_ARG(int, lvl));
+        QMetaObject::invokeMethod(
+            w, "slot_appendLineWithLevel", Qt::QueuedConnection, Q_ARG(QString, line), Q_ARG(int, lvl));
     }
 
     void flush_() override {}
@@ -303,8 +299,7 @@ class XlcLogWidgetPrivate
     friend class XlcLogWidget;
 
 public:
-    explicit XlcLogWidgetPrivate(XlcLogWidget *q)
-        : q_ptr(q)
+    explicit XlcLogWidgetPrivate(XlcLogWidget *q) : q_ptr(q)
     {
         initDefaultColors();
     }
@@ -342,9 +337,12 @@ public:
 
         m_labelLevel = new QLabel(QStringLiteral("\u7ea7\u522b:"), q_ptr);
         m_modeCombo = new QComboBox(q_ptr);
-        m_modeCombo->addItem(QStringLiteral("\u663e\u793a\u5168\u90e8"), QVariant::fromValue(static_cast<int>(XlcLogFilterProxyModel::ModeShowAll)));
-        m_modeCombo->addItem(QStringLiteral("\u4e0d\u4f4e\u4e8e\u6240\u9009\u7ea7\u522b"), QVariant::fromValue(static_cast<int>(XlcLogFilterProxyModel::ModeAtLeast)));
-        m_modeCombo->addItem(QStringLiteral("\u4ec5\u663e\u793a\u6240\u9009\u7ea7\u522b"), QVariant::fromValue(static_cast<int>(XlcLogFilterProxyModel::ModeExact)));
+        m_modeCombo->addItem(QStringLiteral("\u663e\u793a\u5168\u90e8"),
+                             QVariant::fromValue(static_cast<int>(XlcLogFilterProxyModel::ModeShowAll)));
+        m_modeCombo->addItem(QStringLiteral("\u4e0d\u4f4e\u4e8e\u6240\u9009\u7ea7\u522b"),
+                             QVariant::fromValue(static_cast<int>(XlcLogFilterProxyModel::ModeAtLeast)));
+        m_modeCombo->addItem(QStringLiteral("\u4ec5\u663e\u793a\u6240\u9009\u7ea7\u522b"),
+                             QVariant::fromValue(static_cast<int>(XlcLogFilterProxyModel::ModeExact)));
 
         m_levelCombo = new QComboBox(q_ptr);
         const struct
@@ -363,7 +361,7 @@ public:
         {
             m_levelCombo->addItem(QString::fromUtf8(e.name), e.level);
         }
-        m_levelCombo->setCurrentIndex(3);
+        m_levelCombo->setCurrentIndex(0);
     }
 
     void initLayout()
@@ -385,9 +383,13 @@ public:
     void initConnections()
     {
         QObject::connect(m_searchEdit, &QLineEdit::textChanged, q_ptr, &XlcLogWidget::slot_searchEdit_textChanged);
-        QObject::connect(m_modeCombo, qOverload<int>(&QComboBox::currentIndexChanged), q_ptr,
+        QObject::connect(m_modeCombo,
+                         qOverload<int>(&QComboBox::currentIndexChanged),
+                         q_ptr,
                          &XlcLogWidget::slot_modeCombo_currentIndexChanged);
-        QObject::connect(m_levelCombo, qOverload<int>(&QComboBox::currentIndexChanged), q_ptr,
+        QObject::connect(m_levelCombo,
+                         qOverload<int>(&QComboBox::currentIndexChanged),
+                         q_ptr,
                          &XlcLogWidget::slot_levelCombo_currentIndexChanged);
     }
 
@@ -489,15 +491,12 @@ public:
         {
             return;
         }
-        auto logger = spdlog::default_logger();
-        if (!logger)
+        auto sink = std::make_shared<QtListSinkMt>(q_ptr);
+        sink->set_pattern(pattern);
+        if (!XlcLogger::addSinkToDefaultLogger(sink))
         {
             return;
         }
-
-        auto sink = std::make_shared<QtListSinkMt>(q_ptr);
-        sink->set_pattern(pattern);
-        logger->sinks().push_back(sink);
         m_sink = std::move(sink);
     }
 
@@ -507,16 +506,7 @@ public:
         {
             return;
         }
-        auto logger = spdlog::default_logger();
-        if (logger)
-        {
-            auto &sinks = logger->sinks();
-            const auto it = std::find(sinks.begin(), sinks.end(), m_sink);
-            if (it != sinks.end())
-            {
-                sinks.erase(it);
-            }
-        }
+        XlcLogger::removeSinkFromDefaultLogger(m_sink);
         m_sink.reset();
     }
 
@@ -579,13 +569,15 @@ private:
     }
 };
 
-void drawColoredLogLine(QPainter *painter, const QRect &rect, const QString &text, const QColor &defaultColor,
+void drawColoredLogLine(QPainter *painter,
+                        const QRect &rect,
+                        const QString &text,
+                        const QColor &defaultColor,
                         const XlcLogWidgetPrivate *style)
 {
-    static const QRegularExpression re(
-        QStringLiteral(R"((\[(?:trace|debug|info|warn|warning|err|error|critical)\])|)"
-                       R"((\b(?:trace|debug|info|warn|err|critical)\b))"),
-        QRegularExpression::CaseInsensitiveOption);
+    static const QRegularExpression re(QStringLiteral(R"((\[(?:trace|debug|info|warn|warning|err|error|critical)\])|)"
+                                                      R"((\b(?:trace|debug|info|warn|err|critical)\b))"),
+                                       QRegularExpression::CaseInsensitiveOption);
 
     const QFontMetrics fm(painter->font());
     int x = rect.left();
@@ -633,14 +625,14 @@ void XlcLogItemDelegate::paint(QPainter *painter, const QStyleOptionViewItem &op
     painter->save();
     painter->setClipRect(opt.rect);
 
-    const QColor bgColor =
-        m_style->rowBackground(lvl, opt.state.testFlag(QStyle::State_Selected),
-                               opt.features.testFlag(QStyleOptionViewItem::Alternate), opt.palette);
+    const QColor bgColor = m_style->rowBackground(lvl,
+                                                  opt.state.testFlag(QStyle::State_Selected),
+                                                  opt.features.testFlag(QStyleOptionViewItem::Alternate),
+                                                  opt.palette);
     painter->fillRect(opt.rect, bgColor);
 
-    const QColor defaultText =
-        opt.state.testFlag(QStyle::State_Selected) ? opt.palette.color(QPalette::HighlightedText)
-                                                   : opt.palette.color(QPalette::Text);
+    const QColor defaultText = opt.state.testFlag(QStyle::State_Selected) ? opt.palette.color(QPalette::HighlightedText)
+                                                                          : opt.palette.color(QPalette::Text);
 
     QRect textRect = opt.rect;
     textRect.adjust(4, 0, -4, 0);
@@ -659,8 +651,7 @@ void XlcLogItemDelegate::paint(QPainter *painter, const QStyleOptionViewItem &op
     painter->restore();
 }
 
-XlcLogWidget::XlcLogWidget(QWidget *parent)
-    : QWidget(parent), d_ptr(std::make_unique<XlcLogWidgetPrivate>(this))
+XlcLogWidget::XlcLogWidget(QWidget *parent) : QWidget(parent), d_ptr(std::make_unique<XlcLogWidgetPrivate>(this))
 {
     d_ptr->setupUi();
 }

@@ -1,13 +1,12 @@
 #include "MainWindow.h"
-#include "XlcLogger.hpp"
 #include "XlcLogWidget.h"
-#include <QVBoxLayout>
+#include "XlcLogger.hpp"
 #include <QHBoxLayout>
-#include <QPushButton>
 #include <QPlainTextEdit>
+#include <QPushButton>
+#include <QVBoxLayout>
 
-MainWindow::MainWindow(QWidget *parent)
-    : QWidget(parent)
+MainWindow::MainWindow(QWidget *parent) : QWidget(parent)
 {
     // 初始化UI
     setupUi();
@@ -61,7 +60,9 @@ void MainWindow::initLayout()
 
 void MainWindow::initConnections()
 {
-    connect(m_pushButtonAddTrace, &QPushButton::clicked, this,
+    connect(m_pushButtonAddTrace,
+            &QPushButton::clicked,
+            this,
             [this]()
             {
                 const QString log = m_plainTextEdit->toPlainText();
@@ -72,7 +73,9 @@ void MainWindow::initConnections()
 
                 LOG_TRACE("{}", log);
             });
-    connect(m_pushButtonAddDebug, &QPushButton::clicked, this,
+    connect(m_pushButtonAddDebug,
+            &QPushButton::clicked,
+            this,
             [this]()
             {
                 const QString log = m_plainTextEdit->toPlainText();
@@ -83,7 +86,9 @@ void MainWindow::initConnections()
 
                 LOG_DEBUG("{}", log);
             });
-    connect(m_pushButtonAddInfo, &QPushButton::clicked, this,
+    connect(m_pushButtonAddInfo,
+            &QPushButton::clicked,
+            this,
             [this]()
             {
                 const QString log = m_plainTextEdit->toPlainText();
@@ -94,7 +99,9 @@ void MainWindow::initConnections()
 
                 LOG_INFO("{}", log);
             });
-    connect(m_pushButtonAddWarn, &QPushButton::clicked, this,
+    connect(m_pushButtonAddWarn,
+            &QPushButton::clicked,
+            this,
             [this]()
             {
                 const QString log = m_plainTextEdit->toPlainText();
@@ -105,7 +112,9 @@ void MainWindow::initConnections()
 
                 LOG_WARN("{}", log);
             });
-    connect(m_pushButtonAddError, &QPushButton::clicked, this,
+    connect(m_pushButtonAddError,
+            &QPushButton::clicked,
+            this,
             [this]()
             {
                 const QString log = m_plainTextEdit->toPlainText();
@@ -116,7 +125,9 @@ void MainWindow::initConnections()
 
                 LOG_ERROR("{}", log);
             });
-    connect(m_pushButtonAddCritical, &QPushButton::clicked, this,
+    connect(m_pushButtonAddCritical,
+            &QPushButton::clicked,
+            this,
             [this]()
             {
                 const QString log = m_plainTextEdit->toPlainText();

@@ -1,6 +1,6 @@
 # QtForge
 
-QtForge 是一个基于 **CMake + Qt5 Widgets + C++17** 的桌面应用模板，适合作为新的 Qt Widgets 项目起点。它提供了一个可直接运行的主窗口示例，并集成了基于 `spdlog` 的日志库和日志查看控件，方便快速搭建带日志能力的 Qt 桌面程序。
+QtForge 是一个基于 **CMake + Qt5 Widgets + C++17** 的桌面应用脚手架，适合作为新的 Qt Widgets 项目起点。它提供了一个可直接运行的示例程序，并集成了基于 `spdlog` 的日志库和日志查看控件，方便快速搭建带日志能力的 Qt 桌面程序。
 
 ## 功能概览
 
@@ -16,14 +16,15 @@ QtForge 是一个基于 **CMake + Qt5 Widgets + C++17** 的桌面应用模板，
 
 ```text
 .
-├── CMakeLists.txt                 # 顶层 CMake 配置，生成示例可执行程序
+├── CMakeLists.txt                 # 顶层 CMake 配置，管理公共配置、内置库和示例开关
 ├── cmake/
 │   └── FindMyQt.cmake             # 本地 Qt 路径选择辅助函数
-├── include/
-│   └── MainWindow.h               # 示例主窗口
-├── src/
-│   ├── main.cpp                   # 程序入口与日志格式化示例
-│   └── MainWindow.cpp             # 示例界面与日志按钮
+├── examples/
+│   └── log_widget_demo/           # 日志控件示例程序
+│       ├── CMakeLists.txt
+│       ├── main.cpp               # 程序入口与日志格式化示例
+│       ├── MainWindow.h           # 示例主窗口
+│       └── MainWindow.cpp         # 示例界面与日志按钮
 ├── libs/
 │   ├── XlcLogger/                 # spdlog 封装库，动态库
 │   └── XlcLogWidget/              # Qt 日志查看控件，静态库
@@ -72,6 +73,13 @@ cmake -S . -B build
 cmake --build build --config Debug
 ```
 
+默认会构建示例程序。如只需要构建内置库，可关闭示例：
+
+```powershell
+cmake -S . -B build -DQTFORGE_BUILD_EXAMPLES=OFF
+cmake --build build --config Debug
+```
+
 如果你使用多配置生成器（例如 Visual Studio），运行产物通常位于：
 
 ```text
@@ -83,13 +91,13 @@ build/Release/
 
 ## 示例程序
 
-示例程序的可执行目标名来自顶层 CMake 项目名：
+示例程序位于 `examples/log_widget_demo`，可执行目标名为：
 
 ```cmake
-project(CMake_Qt_Project_Example VERSION 0.0.1 LANGUAGES C CXX)
+QtForgeLogWidgetExample
 ```
 
-使用 QtForge 创建自己的项目时，建议先将该项目名改为实际应用名称。
+顶层 CMake 项目名为 `QtForge`。使用 QtForge 创建自己的项目时，可以保留 `libs/` 作为基础组件，也可以按需关闭或删除 `examples/`。
 
 程序启动时会：
 
@@ -160,9 +168,10 @@ initItems() -> initLayout() -> initConnections() -> initWidget()
 
 - 顶层 `CMakeLists.txt` 中的 `project(...)` 名称和版本。
 - `cmake/FindMyQt.cmake` 中的本机 Qt 安装路径。
-- `src/main.cpp` 中的启动逻辑和示例日志。
-- `include/MainWindow.h`、`src/MainWindow.cpp` 中的示例界面。
+- `examples/log_widget_demo/main.cpp` 中的启动逻辑和示例日志。
+- `examples/log_widget_demo/MainWindow.h`、`examples/log_widget_demo/MainWindow.cpp` 中的示例界面。
 - 按需保留、替换或删除 `libs/XlcLogger` 与 `libs/XlcLogWidget`。
+- 按需保留、替换、关闭或删除 `examples/`。
 
 建议先确保模板原样能配置、编译、运行，再逐步替换业务代码。
 

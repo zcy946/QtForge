@@ -20,15 +20,16 @@ add_library(XlcLogWidget STATIC
 
 target_include_directories(XlcLogWidget
     PUBLIC
-        $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
-        $<INSTALL_INTERFACE:include>
+    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+    $<INSTALL_INTERFACE:include>
 )
 
 target_link_libraries(XlcLogWidget
     PUBLIC
-        Qt5::Core
-        Qt5::Widgets
-        spdlog::spdlog_header_only
+    XlcLogger
+    Qt5::Core
+    Qt5::Widgets
+    spdlog::spdlog_header_only
 )
 
 set_target_properties(XlcLogWidget PROPERTIES
