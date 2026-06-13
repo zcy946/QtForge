@@ -60,82 +60,76 @@ void MainWindow::initLayout()
 
 void MainWindow::initConnections()
 {
-    connect(m_pushButtonAddTrace,
-            &QPushButton::clicked,
-            this,
-            [this]()
-            {
-                const QString log = m_plainTextEdit->toPlainText();
-                if (log.isEmpty())
-                {
-                    return;
-                }
+    connect(m_pushButtonAddTrace, &QPushButton::clicked, this, &MainWindow::onPushButtonAddTraceClicked);
+    connect(m_pushButtonAddDebug, &QPushButton::clicked, this, &MainWindow::onPushButtonAddDebugClicked);
+    connect(m_pushButtonAddInfo, &QPushButton::clicked, this, &MainWindow::onPushButtonAddInfoClicked);
+    connect(m_pushButtonAddWarn, &QPushButton::clicked, this, &MainWindow::onPushButtonAddWarnClicked);
+    connect(m_pushButtonAddError, &QPushButton::clicked, this, &MainWindow::onPushButtonAddErrorClicked);
+    connect(m_pushButtonAddCritical, &QPushButton::clicked, this, &MainWindow::onPushButtonAddCriticalClicked);
+}
 
-                LOG_TRACE("{}", log);
-            });
-    connect(m_pushButtonAddDebug,
-            &QPushButton::clicked,
-            this,
-            [this]()
-            {
-                const QString log = m_plainTextEdit->toPlainText();
-                if (log.isEmpty())
-                {
-                    return;
-                }
+void MainWindow::onPushButtonAddTraceClicked()
+{
+    const QString log = m_plainTextEdit->toPlainText();
+    if (log.isEmpty())
+    {
+        return;
+    }
 
-                LOG_DEBUG("{}", log);
-            });
-    connect(m_pushButtonAddInfo,
-            &QPushButton::clicked,
-            this,
-            [this]()
-            {
-                const QString log = m_plainTextEdit->toPlainText();
-                if (log.isEmpty())
-                {
-                    return;
-                }
+    LOG_TRACE("{}", log);
+}
 
-                LOG_INFO("{}", log);
-            });
-    connect(m_pushButtonAddWarn,
-            &QPushButton::clicked,
-            this,
-            [this]()
-            {
-                const QString log = m_plainTextEdit->toPlainText();
-                if (log.isEmpty())
-                {
-                    return;
-                }
+void MainWindow::onPushButtonAddDebugClicked()
+{
+    const QString log = m_plainTextEdit->toPlainText();
+    if (log.isEmpty())
+    {
+        return;
+    }
 
-                LOG_WARN("{}", log);
-            });
-    connect(m_pushButtonAddError,
-            &QPushButton::clicked,
-            this,
-            [this]()
-            {
-                const QString log = m_plainTextEdit->toPlainText();
-                if (log.isEmpty())
-                {
-                    return;
-                }
+    LOG_DEBUG("{}", log);
+}
 
-                LOG_ERROR("{}", log);
-            });
-    connect(m_pushButtonAddCritical,
-            &QPushButton::clicked,
-            this,
-            [this]()
-            {
-                const QString log = m_plainTextEdit->toPlainText();
-                if (log.isEmpty())
-                {
-                    return;
-                }
+void MainWindow::onPushButtonAddInfoClicked()
+{
+    const QString log = m_plainTextEdit->toPlainText();
+    if (log.isEmpty())
+    {
+        return;
+    }
 
-                LOG_CRITICAL("{}", log);
-            });
+    LOG_INFO("{}", log);
+}
+
+void MainWindow::onPushButtonAddWarnClicked()
+{
+    const QString log = m_plainTextEdit->toPlainText();
+    if (log.isEmpty())
+    {
+        return;
+    }
+
+    LOG_WARN("{}", log);
+}
+
+void MainWindow::onPushButtonAddErrorClicked()
+{
+    const QString log = m_plainTextEdit->toPlainText();
+    if (log.isEmpty())
+    {
+        return;
+    }
+
+    LOG_ERROR("{}", log);
+}
+
+void MainWindow::onPushButtonAddCriticalClicked()
+{
+    const QString log = m_plainTextEdit->toPlainText();
+    if (log.isEmpty())
+    {
+        return;
+    }
+
+    LOG_CRITICAL("{}", log);
 }

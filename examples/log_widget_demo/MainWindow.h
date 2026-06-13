@@ -29,6 +29,12 @@ private:
     void initItems();
     void initLayout();
     void initConnections();
+    void onPushButtonAddTraceClicked();
+    void onPushButtonAddDebugClicked();
+    void onPushButtonAddInfoClicked();
+    void onPushButtonAddWarnClicked();
+    void onPushButtonAddErrorClicked();
+    void onPushButtonAddCriticalClicked();
 
     QPushButton *m_pushButtonAddTrace;
     QPushButton *m_pushButtonAddDebug;
