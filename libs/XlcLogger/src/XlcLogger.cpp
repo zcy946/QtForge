@@ -139,8 +139,8 @@ XlcLoggerOptions XlcLoggerOptions::defaultForCurrentBuild()
     options.consoleLevel = spdlog::level::trace;
     options.fileLevel = spdlog::level::trace;
 #else
-    options.consoleLevel = spdlog::level::warn;
-    options.fileLevel = spdlog::level::warn;
+    options.consoleLevel = spdlog::level::info;
+    options.fileLevel = spdlog::level::info;
 #endif
     options.loggerLevel = spdlog::level::trace;
     return options;

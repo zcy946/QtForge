@@ -107,7 +107,7 @@ struct XlcLoggerOptions
 
     /**
      * @brief 按当前构建类型（如 Qt Debug / `_DEBUG` / `NDEBUG`）填充默认级别。
-     * @return 填充后的选项（Debug 多为 trace，Release 多为 warn）。
+     * @return 填充后的选项（Debug 多为 trace，Release 多为 info）。
      */
     static XlcLoggerOptions defaultForCurrentBuild();
 };

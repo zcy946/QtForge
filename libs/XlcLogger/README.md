@@ -79,7 +79,7 @@ target_link_libraries(my_app PRIVATE
 
 | API | 说明 |
 |-----|------|
-| `XlcLoggerOptions::defaultForCurrentBuild()` | 根据当前预处理宏填充默认级别：Qt Debug、`_DEBUG` 或未定义 `NDEBUG` 时为 `trace`；否则为 `warn`；`loggerLevel` 保持 `trace` 总闸。 |
+| `XlcLoggerOptions::defaultForCurrentBuild()` | 根据当前预处理宏填充默认级别：Qt Debug、`_DEBUG` 或未定义 `NDEBUG` 时为 `trace`；否则为 `info`；`loggerLevel` 保持 `trace` 总闸。 |
 | `XlcLogger::init()` / `init(opts)` | 初始化默认 logger，注册控制台 sink 和可选轮转文件 sink。 |
 | `XlcLogger::shutdown()` | 关闭并刷新 spdlog；正常退出路径中应显式调用一次。 |
 | `XlcLogger::fileSinkEnabled()` | 查询当前文件 sink 是否成功启用，与首次 `init` 返回值一致。 |
@@ -105,7 +105,7 @@ target_link_libraries(my_app PRIVATE
 
 int main(int argc, char *argv[])
 {
-    (void)XlcLogger::init();  // 使用 defaultForCurrentBuild()：Debug 多为 trace，Release 多为 warn
+    (void)XlcLogger::init();  // 使用 defaultForCurrentBuild()：Debug 多为 trace，Release 多为 info
 
     LOG_INFO("application start");
     LOG_DEBUG("debug {}", 42);
@@ -203,7 +203,7 @@ int main(int argc, char *argv[])
 ## 日志级别与宏裁剪
 
 - **运行时**：`loggerLevel` 为总闸；`consoleLevel`、`fileLevel` 分别限制控制台与文件。
-- **默认运行时级别**：`defaultForCurrentBuild()` 在 Qt Debug、`_DEBUG` 或未定义 `NDEBUG` 时让控制台和文件输出 `trace` 及以上；否则输出 `warn` 及以上。
+- **默认运行时级别**：`defaultForCurrentBuild()` 在 Qt Debug、`_DEBUG` 或未定义 `NDEBUG` 时让控制台和文件输出 `trace` 及以上；否则输出 `info` 及以上。
 - **运行时调级**：需要临时放宽或收紧输出时，可用 `setLevel()` 同时调整 logger 和 sink，或用 `setConsoleLevel()` / `setFileLevel()` 分别调整。
 - **编译期**：`LOG_TRACE`～`LOG_CRITICAL` 受 **`SPDLOG_ACTIVE_LEVEL`** 约束（由本库 CMake 按配置传入：Debug / RelWithDebInfo 为 `0`，Release / MinSizeRel 为 `2`）。低于该级别的宏可展开为 `(void)0`，避免格式参数求值。
 
