@@ -1,4 +1,8 @@
 {
+    "cmake.copyCompileCommands": "${workspaceFolder}/compile_commands.json",
+    "clangd.arguments": [
+        "--compile-commands-dir=${workspaceFolder}"
+    ],
     "cmake.debugConfig": {
         "console": "integratedTerminal",
         "visualizerFile": "${workspaceFolder}/.vscode/qt5.natvis"
