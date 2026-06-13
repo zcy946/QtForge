@@ -1,0 +1,25 @@
+{
+  "version": 6,
+  "configurePresets": [
+    {
+      "name": "local-vcpkg-windows-ninja-debug",
+      "inherits": "vcpkg-windows-ninja-debug",
+      "cacheVariables": {
+        "CMAKE_PREFIX_PATH": "D:/Software/Development/Qt/5.15.2/msvc2019_64"
+      },
+      "environment": {
+        "PATH": "D:/Software/Development/Qt/5.15.2/msvc2019_64/bin;$penv{PATH}"
+      }
+    },
+    {
+      "name": "local-vcpkg-windows-ninja-release",
+      "inherits": "vcpkg-windows-ninja-release",
+      "cacheVariables": {
+        "CMAKE_PREFIX_PATH": "D:/Software/Development/Qt/5.15.2/msvc2019_64"
+      },
+      "environment": {
+        "PATH": "D:/Software/Development/Qt/5.15.2/msvc2019_64/bin;$penv{PATH}"
+      }
+    }
+  ]
+}

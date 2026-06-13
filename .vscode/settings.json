@@ -1,0 +1,6 @@
+{
+    "cmake.debugConfig": {
+        "console": "integratedTerminal",
+        "visualizerFile": "${workspaceFolder}/.vscode/qt5.natvis"
+    }
+}

@@ -1,2 +1,54 @@
+# Build directories
 build/
+out/
+
+# CMake generated files
+CMakeCache.txt
+CMakeFiles/
+cmake_install.cmake
+compile_commands.json
+CTestTestfile.cmake
+Testing/
+CMakeUserPresets.json
+
+# vcpkg local installs
+vcpkg_installed/
+
+# Visual Studio / MSVC
 .vscode/
+!.vscode/
+!.vscode/settings.json
+!.vscode/qt*.natvis
+.vs/
+*.suo
+*.user
+*.userosscache
+*.sln.docstates
+*.vcxproj.user
+*.pdb
+*.ilk
+*.obj
+*.idb
+*.pch
+*.res
+
+# Build outputs
+*.exe
+*.dll
+*.lib
+*.a
+*.so
+*.dylib
+
+# Ninja
+.ninja_deps
+.ninja_log
+
+# Logs and temporary files
+*.log
+*.tmp
+*.temp
+
+# OS files
+.DS_Store
+Thumbs.db

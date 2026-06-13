@@ -1,0 +1,10 @@
+{
+  "name": "qtforge",
+  "version-string": "0.0.1",
+  "description": "Qt5 Widgets desktop application scaffold with spdlog-based logging components",
+  "license": "MIT",
+  "builtin-baseline": "aa40adda5352e87655b8583cfb2451d5e9e276fd",
+  "dependencies": [
+    "spdlog"
+  ]
+}

@@ -6,7 +6,7 @@ QtForge 是一个基于 **CMake + Qt5 Widgets + C++17** 的桌面应用脚手架
 
 - 使用 CMake 管理 Qt Widgets 应用。
 - 自动开启 `AUTOMOC`、`AUTOUIC`、`AUTORCC`。
-- 使用 `FindMyQt.cmake` 根据 Qt 版本、编译器和系统位数选择 Qt 安装路径。
+- 使用标准 `find_package(Qt5 ...)` 查找 Qt。
 - 内置 `XlcLogger` 动态库，提供 `LOG_TRACE`、`LOG_DEBUG`、`LOG_INFO` 等日志宏。
 - 内置 `XlcLogWidget` 静态库，可在界面中实时显示 `spdlog` 日志。
 - 约定 QWidget 子类使用统一的初始化流程，避免额外抽象基类限制继承层级。
@@ -17,8 +17,6 @@ QtForge 是一个基于 **CMake + Qt5 Widgets + C++17** 的桌面应用脚手架
 ```text
 .
 ├── CMakeLists.txt                 # 顶层 CMake 配置，管理公共配置、内置库和示例开关
-├── cmake/
-│   └── FindMyQt.cmake             # 本地 Qt 路径选择辅助函数
 ├── examples/
 │   └── log_widget_demo/           # 日志控件示例程序
 │       ├── CMakeLists.txt
@@ -39,52 +37,63 @@ QtForge 是一个基于 **CMake + Qt5 Widgets + C++17** 的桌面应用脚手架
 |------|------|
 | CMake >= 3.16 | 顶层和子库均要求 3.16 或更高版本 |
 | C++17 编译器 | MSVC 或 MinGW 均可按需配置 |
-| Qt5 | 当前顶层工程调用 `find_my_qt(5)` 并查找 `Qt5::Core`、`Qt5::Widgets`、`Qt5::Gui` |
-| spdlog | 通过 `find_package(spdlog CONFIG REQUIRED)` 查找，建议使用 vcpkg、Conan 或本机包管理方式安装 |
+| Qt5 | 顶层工程查找 `Qt5::Core`、`Qt5::Widgets`、`Qt5::Gui` |
+| vcpkg | 使用 `CMakePresets.json` 中的 vcpkg preset 时，需要设置 `VCPKG_ROOT` 环境变量 |
+| spdlog | 已在 `vcpkg.json` 中声明，使用 vcpkg preset 配置时会自动安装 |
 
 ## Qt 路径配置
-
-`cmake/FindMyQt.cmake` 会根据目标 Qt 版本、编译器和系统位数拼出变量名，例如：
-
-- `ROOT_QT_5_MSVC_X64`
-- `ROOT_QT_5_MSVC_X32`
-- `ROOT_QT_5_MINGW_X64`
-- `ROOT_QT_6_MSVC_X64`
 
 当前顶层工程使用的是 Qt5：
 
 ```cmake
-find_my_qt(5)
 find_package(Qt5 COMPONENTS Core Widgets Gui REQUIRED)
 ```
 
-使用前请按自己的机器环境修改 `cmake/FindMyQt.cmake` 中的默认路径，或在 CMake Configure 时通过命令行 / CMake Preset / VSCode Profile 传入对应变量：
+使用前请按自己的机器环境提供 Qt 路径。推荐复制 `CMakeUserPresets.json.example` 为 `CMakeUserPresets.json`，再修改其中的 `CMAKE_PREFIX_PATH` 和 `PATH`。`CMakeUserPresets.json` 已被 `.gitignore` 忽略，适合保存个人机器配置。
+
+也可以在 CMake Configure 时通过命令行 / VSCode Profile 传入对应变量：
 
 ```powershell
-cmake -S . -B build -DROOT_QT_5_MSVC_X64="D:/Qt/5.15.2/msvc2019_64"
+cmake -S . -B build -DCMAKE_PREFIX_PATH="D:/Qt/5.15.2/msvc2019_64"
 ```
+
+如果更愿意指定到 Qt 包配置目录，也可以设置 `Qt5_DIR`，例如 `D:/Qt/5.15.2/msvc2019_64/lib/cmake/Qt5`。
 
 ## 构建
 
-示例命令：
+推荐使用 CMake Presets 构建。Windows + vcpkg + Visual Studio 生成器示例：
 
 ```powershell
-cmake -S . -B build
-cmake --build build --config Debug
+cmake --preset vcpkg-windows-debug
+cmake --build --preset vcpkg-windows-debug
 ```
 
-默认会构建示例程序。如只需要构建内置库，可关闭示例：
+Windows + vcpkg + Ninja 示例：
 
 ```powershell
-cmake -S . -B build -DQTFORGE_BUILD_EXAMPLES=OFF
-cmake --build build --config Debug
+cmake --preset vcpkg-windows-ninja-debug
+cmake --build --preset vcpkg-windows-ninja-debug
+```
+
+不使用 vcpkg 时，也可以使用普通 preset：
+
+```powershell
+cmake --preset windows-debug
+cmake --build --preset windows-debug
+```
+
+默认会构建示例程序。如只需要构建内置库，可在 configure 时关闭示例：
+
+```powershell
+cmake --preset vcpkg-windows-debug -DQTFORGE_BUILD_EXAMPLES=OFF
+cmake --build --preset vcpkg-windows-debug
 ```
 
 如果你使用多配置生成器（例如 Visual Studio），运行产物通常位于：
 
 ```text
-build/Debug/
-build/Release/
+build/vcpkg-windows-debug/Debug/
+build/vcpkg-windows-release/Release/
 ```
 
 切换 Qt 路径、编译器、生成器或重要 CMake 配置后，建议删除 `build` 目录后重新配置和编译。
@@ -167,7 +176,7 @@ initItems() -> initLayout() -> initConnections() -> initWidget()
 复制 QtForge 后，通常需要修改：
 
 - 顶层 `CMakeLists.txt` 中的 `project(...)` 名称和版本。
-- `cmake/FindMyQt.cmake` 中的本机 Qt 安装路径。
+- `CMakeUserPresets.json` 中的本机 Qt 安装路径。
 - `examples/log_widget_demo/main.cpp` 中的启动逻辑和示例日志。
 - `examples/log_widget_demo/MainWindow.h`、`examples/log_widget_demo/MainWindow.cpp` 中的示例界面。
 - 按需保留、替换或删除 `libs/XlcLogger` 与 `libs/XlcLogWidget`。
@@ -180,7 +189,7 @@ initItems() -> initLayout() -> initConnections() -> initWidget()
 - 本项目源码建议统一保存为 UTF-8。
 - Windows Release 配置会自动隐藏控制台：`WIN32_EXECUTABLE` 仅在 Release 为 true。
 - `XlcLogger` 是动态库，运行时需确保生成的 DLL 能被可执行程序找到。
-- 如果 `find_package(spdlog CONFIG REQUIRED)` 失败，请先检查包管理器安装情况和 `CMAKE_PREFIX_PATH`。
+- 如果 `find_package(spdlog CONFIG REQUIRED)` 失败，请优先使用 `vcpkg-*` preset，并检查 `VCPKG_ROOT` 是否正确。
 - 切换配置文件、编译器或 Qt 安装路径后，建议删除 `build` 目录重新配置。
 
 ## 许可证
