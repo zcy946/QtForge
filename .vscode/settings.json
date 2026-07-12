@@ -1,7 +1,8 @@
 {
     "cmake.copyCompileCommands": "${workspaceFolder}/compile_commands.json",
     "clangd.arguments": [
-        "--compile-commands-dir=${workspaceFolder}"
+        "--compile-commands-dir=${workspaceFolder}",
+        "--header-insertion=never"
     ],
     "cmake.debugConfig": {
         "type": "cppvsdbg",
