@@ -59,6 +59,44 @@ cmake -S . -B build -DCMAKE_PREFIX_PATH="D:/Qt/5.15.2/msvc2019_64"
 
 如果更愿意指定到 Qt 包配置目录，也可以设置 `Qt5_DIR`，例如 `D:/Qt/5.15.2/msvc2019_64/lib/cmake/Qt5`。
 
+### `CMakeUserPresets.json.example` 的用法
+
+1. 复制 `CMakeUserPresets.json.example` 为 `CMakeUserPresets.json`。后者已被 Git 忽略，不应提交个人路径。
+2. 选择与本机 Qt 架构一致的预设：`local-vcpkg-windows-ninja-x86-*` 对应 32 位 Qt，`local-vcpkg-windows-ninja-x64-*` 对应 64 位 Qt。
+3. 在所选预设中，将 `CMAKE_PREFIX_PATH` 改为 Qt kit 根目录，并将 `PATH` 中的 `bin` 路径改为同一个 kit。例如 Qt 5.15.2、MSVC 2019、64 位分别为 `D:/Qt/5.15.2/msvc2019_64` 和 `D:/Qt/5.15.2/msvc2019_64/bin`。
+4. 在 VS Code 的 CMake Tools 中选择该 configure preset，重新配置并构建。切换 Qt kit、架构或编译器后，删除旧的 `build` 目录再重新配置。
+
+### VS Code 中调试 Qt 源码（MSVC）
+
+`clangd` 只负责代码分析；Windows 下的源码级调试由 Microsoft C/C++ 扩展的 `cppvsdbg` 完成。Qt 的 PDB 保存的是 Qt 构建服务器上的源码路径，因此需要在 `.vscode/settings.json` 的 `cmake.debugConfig` 中配置 `sourceFileMap`，将 PDB 路径映射到本机 `Src` 目录：
+
+```json
+{
+  "cmake.debugConfig": {
+    "type": "cppvsdbg",
+    "visualizerFile": "${workspaceFolder}/.vscode/qt5.natvis",
+    "sourceFileMap": {
+      "C:\\Users\\qt\\work\\qt": "D:\\Qt\\5.15.2\\Src"
+    }
+  }
+}
+```
+
+左侧路径必须以实际 PDB 为准；例如可检查 `Qt5Cored.pdb`：
+
+```powershell
+rg -a -o --pcre2 "[A-Za-z]:[\\\\/][^\x00]{1,240}qobject\.cpp" "D:\Qt\5.15.2\msvc2019_64\bin\Qt5Cored.pdb"
+```
+
+同时安装与当前 Qt kit 严格匹配的 `Sources` 和 `Debug Information Files`。Qt 二进制、PDB、源码的 Qt 版本、MSVC kit 和 x86/x64 架构必须一致。F11 先进入 `new_scalar.cpp` 等 MSVC CRT 源码是正常现象；继续单步或跳出后即可进入 Qt 源码。
+
+当前工程使用 `find_package(Qt5 ...)` 和 `Qt5::...` 链接目标。因此切换到 Qt 6 不是只改路径：需要先将工程迁移为 Qt 6。迁移完成后，以下配置必须同步使用同一 Qt 6 kit：
+
+- `CMakeUserPresets.json` 中的 `CMAKE_PREFIX_PATH` 和 `PATH`；
+- `.vscode/settings.json` 中的 `sourceFileMap` 本地 `Src` 路径；
+- `.vscode/settings.json` 中的 `visualizerFile`，从 `qt5.natvis` 改为 `qt6.natvis`；
+- Qt 6 对应的 Sources 与 Debug Information Files。
+
 ## 构建
 
 推荐使用 CMake Presets 构建。Windows + vcpkg + Visual Studio 生成器示例：

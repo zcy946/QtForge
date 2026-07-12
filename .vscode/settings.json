@@ -4,7 +4,11 @@
         "--compile-commands-dir=${workspaceFolder}"
     ],
     "cmake.debugConfig": {
+        "type": "cppvsdbg",
         "console": "integratedTerminal",
-        "visualizerFile": "${workspaceFolder}/.vscode/qt5.natvis"
+        "visualizerFile": "${workspaceFolder}/.vscode/qt5.natvis",
+        "sourceFileMap": {
+            "C:\\Users\\qt\\work\\qt": "D:\\Software\\Development\\Qt\\5.15.2\\Src"
+        }
     }
 }
