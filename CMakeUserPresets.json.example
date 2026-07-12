@@ -2,23 +2,63 @@
   "version": 6,
   "configurePresets": [
     {
-      "name": "local-vcpkg-windows-ninja-debug",
+      "name": "local-vcpkg-windows-ninja-x86-debug",
       "inherits": "vcpkg-windows-ninja-debug",
       "cacheVariables": {
-        "CMAKE_PREFIX_PATH": "D:/Software/Development/Qt/5.15.2/msvc2019_64"
+        "CMAKE_PREFIX_PATH": "D:/Software/Development/Qt/5.15.2/msvc2019",
+        "VCPKG_TARGET_TRIPLET": "x86-windows"
       },
       "environment": {
-        "PATH": "D:/Software/Development/Qt/5.15.2/msvc2019_64/bin;$penv{PATH}"
+        "PATH": "D:/Software/Development/Qt/5.15.2/msvc2019/bin;$penv{PATH}"
+      },
+      "architecture": {
+        "value": "x86",
+        "strategy": "external"
       }
     },
     {
-      "name": "local-vcpkg-windows-ninja-release",
+      "name": "local-vcpkg-windows-ninja-x86-release",
       "inherits": "vcpkg-windows-ninja-release",
       "cacheVariables": {
-        "CMAKE_PREFIX_PATH": "D:/Software/Development/Qt/5.15.2/msvc2019_64"
+        "CMAKE_PREFIX_PATH": "D:/Software/Development/Qt/5.15.2/msvc2019",
+        "VCPKG_TARGET_TRIPLET": "x86-windows"
+      },
+      "environment": {
+        "PATH": "D:/Software/Development/Qt/5.15.2/msvc2019/bin;$penv{PATH}"
+      },
+      "architecture": {
+        "value": "x86",
+        "strategy": "external"
+      }
+    },
+    {
+      "name": "local-vcpkg-windows-ninja-x64-debug",
+      "inherits": "vcpkg-windows-ninja-debug",
+      "cacheVariables": {
+        "CMAKE_PREFIX_PATH": "D:/Software/Development/Qt/5.15.2/msvc2019_64",
+        "VCPKG_TARGET_TRIPLET": "x64-windows"
       },
       "environment": {
         "PATH": "D:/Software/Development/Qt/5.15.2/msvc2019_64/bin;$penv{PATH}"
+      },
+      "architecture": {
+        "value": "x64",
+        "strategy": "external"
+      }
+    },
+    {
+      "name": "local-vcpkg-windows-ninja-x64-release",
+      "inherits": "vcpkg-windows-ninja-release",
+      "cacheVariables": {
+        "CMAKE_PREFIX_PATH": "D:/Software/Development/Qt/5.15.2/msvc2019_64",
+        "VCPKG_TARGET_TRIPLET": "x64-windows"
+      },
+      "environment": {
+        "PATH": "D:/Software/Development/Qt/5.15.2/msvc2019_64/bin;$penv{PATH}"
+      },
+      "architecture": {
+        "value": "x64",
+        "strategy": "external"
       }
     }
   ]
