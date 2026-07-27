@@ -1,0 +1,8 @@
+CompileFlags:
+  CompilationDatabase: .
+
+Completion:
+  HeaderInsertion: Never
+
+Documentation:
+  CommentFormat: Doxygen
