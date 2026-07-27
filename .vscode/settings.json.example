@@ -1,9 +1,6 @@
 {
     "cmake.copyCompileCommands": "${workspaceFolder}/compile_commands.json",
-    "clangd.arguments": [
-        "--compile-commands-dir=${workspaceFolder}",
-        "--header-insertion=never"
-    ],
+    "editor.inlayHints.enabled": "offUnlessPressed",
     "cmake.debugConfig": {
         "type": "cppvsdbg",
         "console": "integratedTerminal",

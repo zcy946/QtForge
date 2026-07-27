@@ -15,9 +15,8 @@ CMakeUserPresets.json
 vcpkg_installed/
 
 # Visual Studio / MSVC
-.vscode/
-!.vscode/
-!.vscode/settings.json
+.vscode/*
+!.vscode/settings.json.example
 !.vscode/qt*.natvis
 .vs/
 *.suo
