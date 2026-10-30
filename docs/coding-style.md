@@ -27,10 +27,13 @@ Allman 大括号风格，指针和引用符号靠近变量名。完整规则以�
   `EyLogger` 等独立可复用库保留其公共 API 前缀。类型前缀必须由模块公共 API 统一
   决定，不得由开发者逐个类型自行选择。
 - **函数、方法**：`camelCase`；公开 API 建议动词开头、语义完整。
-- **成员变量**：前缀 **`m_`** + `camelCase`（如 `m_data`、`m_maxLineCount`）。
-- **界面对象成员**：必须在 `m_` 后保留完整控件类型前缀，再写语义，例如
+- **成员变量**：类或结构体中用于封装内部状态的私有、受保护成员，使用前缀 **`m_`** + `camelCase`
+  （如 `m_data`、`m_maxLineCount`）。纯数据结构（如数据记录、配置项、状态快照）的公开字段使用
+  `camelCase`，不加 `m_`，例如 `entry.name`、`state.originalPalette`。按成员职责和封装方式选择，
+  不仅依据 `class` 或 `struct` 关键字决定，也不因数据结构嵌套在类的私有区块中就给其公开字段加前缀。
+- **界面对象成员**：封装类中使用 `m_` 的控件成员，必须在 `m_` 后保留完整控件类型前缀，再写语义，例如
   `m_pushButtonAddTrace`、`m_plainTextEditLogInput`、`m_treeViewDevices`。对应普通连接回调沿用同一
-  对象名，例如 `onPushButtonAddTraceClicked()`。此规则不扩展到局部变量。
+  对象名，例如 `onPushButtonAddTraceClicked()`。此规则不扩展到纯数据结构的公开字段或局部变量。
 - **局部变量、参数**：`camelCase`，按变量职责命名；短生命周期可用简短名称，但避免含糊的 `tmp`、
   `ret`。不使用 `v`、`h`、`p`、`str` 等类型缩写前缀；类型或方向确实构成语义时使用完整单词。
 - **宏、全文件常量**：习惯上全大写或项目统一前缀；与所依赖库（Qt、spdlog 等）的惯例冲突时，**以库为准**。
