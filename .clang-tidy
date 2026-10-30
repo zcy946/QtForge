@@ -1,0 +1,21 @@
+Checks: >
+  -*,
+  portability-avoid-pragma-once,
+  bugprone-use-after-move,
+  bugprone-macro-parentheses,
+  bugprone-macro-repeated-side-effects,
+  bugprone-unused-raii,
+  bugprone-assert-side-effect,
+  bugprone-dangling-handle,
+  modernize-use-override,
+  modernize-use-nullptr,
+  performance-for-range-copy,
+  performance-unnecessary-copy-initialization,
+  readability-braces-around-statements,
+  readability-container-size-empty
+
+WarningsAsErrors: 'portability-avoid-pragma-once'
+
+HeaderFilterRegex: '.*'
+
+FormatStyle: file

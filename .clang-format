@@ -35,9 +35,6 @@ IndentAccessModifiers: false
 # switch 的 case 标签相对 switch 块缩进。
 IndentCaseLabels: true
 
-# namespace 内部不额外缩进，避免大命名空间导致整体右移。
-NamespaceIndentation: None
-
 # 只允许空函数写成单行，例如 void f() {}。
 AllowShortFunctionsOnASingleLine: Empty
 
@@ -83,6 +80,15 @@ SpacesInParentheses: false
 # 方括号内部不额外加空格，例如 arr[i]。
 SpacesInSquareBrackets: false
 
-# 按 clang-format 当前支持的最新 C++ 语法解析代码。
-Standard: Latest
+# 根据 C++17 语法进行格式化
+Standard: c++17
+
+# 定义块之间插入空行
+SeparateDefinitionBlocks: Always
+
+# 自动为控制语句添加`{}`
+InsertBraces: false
+
+# 自动为命名空间闭合大括号添加注释
+FixNamespaceComments: true
 ...

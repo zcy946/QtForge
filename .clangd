@@ -1,0 +1,23 @@
+Index:
+  Background: Build
+  StandardLibrary: true
+
+Completion:
+  HeaderInsertion: Never
+  ArgumentLists: FullPlaceholders
+  AllScopes: Yes
+
+InlayHints:
+  Enabled: true
+  ParameterNames: true
+  DeducedTypes: true
+  Designators: true
+  DefaultArguments: true
+  BlockEnd: false
+  TypeNameLimit: 32
+
+Hover:
+  ShowAKA: true
+
+Documentation:
+  CommentFormat: Doxygen
