@@ -1,0 +1,16 @@
+{
+    "cmake.copyCompileCommands": "${workspaceFolder}/build/compile_commands.json",
+    "editor.inlayHints.enabled": "offUnlessPressed",
+    "cmake.debugConfig": {
+        "type": "cppvsdbg",
+        "console": "integratedTerminal",
+        "visualizerFile": "${workspaceFolder}/.vscode/qt5.natvis",
+        "sourceFileMap": {
+            "C:\\Users\\qt\\work\\qt": "E:\\Software\\Qt\\5.15.2\\Src"
+        }
+    },
+    "clangd.arguments": [
+        "--completion-style=detailed",
+        "--clang-tidy"
+    ]
+}
